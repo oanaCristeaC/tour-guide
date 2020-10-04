@@ -1,0 +1,17 @@
+{
+  "name": "tour-guide",
+  "version": "1.0.0",
+  "description": "A simple tour guide api",
+  "main": "app.js",
+  "scripts": {
+    "serve": "nodemon app.js"
+  },
+  "author": "ionela cristea",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "prettier": "2.1.2"
+  }
+}
