@@ -20,6 +20,7 @@ app.get('/', (req, res) => {
   res.send('Hello wold');
 });
 
+// Get tours
 app.get('/api/v1/tours', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -29,6 +30,21 @@ app.get('/api/v1/tours', (req, res) => {
     }
   })
 });
+
+// Get tour with id
+app.get('/api/v1/tours/:id', (req, res) => {
+  
+  const id = parseInt(req.params.id);
+  const tour = tours.find(el => el.id === id);
+
+  res.status(200).json({
+    status: 'Success',
+    data:{
+      tour
+    }
+  })
+
+})
 
 app.post('/api/v1/tours', (req, res) => {
   //console.log("res", req.body)
