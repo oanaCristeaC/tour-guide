@@ -97,20 +97,13 @@ const deleteTour = (req, res) => {
   res.sendStatus(404);
 };
 
-// Get tours
-app.get('/api/v1/tours', getTours);
+app.route('/api/v1/tours').get(getTours).post(createTour);
 
-// Create tour
-app.post('/api/v1/tours', createTour);
-
-// Get tour by id
-app.get('/api/v1/tours/:id', getTour);
-
-// Update tour
-app.patch('/api/v1/tours/:id', updateTour);
-
-// Delete tour
-app.delete('/api/v1/tours/:id', deleteTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 // App running
 app.listen(port, () => {
