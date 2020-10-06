@@ -120,11 +120,18 @@ const updateUser = (req, res) => {
     res.sendStatus(500)
 }
 
-// tours endpoint
-app.route('/api/v1/tours').get(getTours).post(createTour);
+/** Routers */
 
-app
-    .route('/api/v1/tours/:id')
+const toursRouter = express.Router()
+const usersRouter = express.Router()
+
+app.use('/api/v1/tours', toursRouter)
+app.use('/api/v1/users', usersRouter)
+
+// tours endpoint
+toursRouter.route('/').get(getTours).post(createTour);
+toursRouter
+    .route('/:id')
     .get(getTour)
     .patch(updateTour)
     .delete(deleteTour);
@@ -132,8 +139,8 @@ app
 
 // User endpoint
 
-app.route('/api/v1/users').get(getUsers).post(createUser);
-app.route('/api/v1/users/:id').get(getUser).delete(deleteUser).patch(updateUser)
+usersRouter.route('/').get(getUsers).post(createUser);
+usersRouter.route('/:id').get(getUser).delete(deleteUser).patch(updateUser)
 
 // App running
 app.listen(port, () => {
