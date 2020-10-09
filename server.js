@@ -8,14 +8,28 @@ dotenv.config({
 const db = process.env.DB.replace('<PASSWORD>', process.env.DB_PASS)
 
 mongoose.connect(db, {
-//mongoose.connect(process.env.DB_LOCAL, {
   // useNewUrlParser: true,
   // useCreateIndex: true,
   // useFindAndModify: true
-}).then(con => {
-  // console.log(con.connection)
-  console.log("app running")
-})
+}).then(() => console.log("DB connection Successful"));
+
+const tourSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Tour must have a name.'],
+    unique: true
+  },
+  ratting: {
+    type: Number,
+    default: 0
+  },
+  price: {
+    type: Number,
+    required: [true, 'Tour must have a price.']
+  }
+});
+
+const Tour = mongoose.model('Tour', tourSchema)
 
 const app = require('./app');
 
