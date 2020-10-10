@@ -5,6 +5,7 @@ dotenv.config({
   path: './config.env',
 });
 
+// Connection to DB
 const db = process.env.DB.replace('<PASSWORD>', process.env.DB_PASS)
 
 mongoose.connect(db, {
@@ -15,40 +16,10 @@ mongoose.connect(db, {
 
 }).then(() => console.log("DB connection Successful"));
 
-const tourSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Tour must have a name.'],
-    unique: true
-  },
-  ratting: {
-    type: Number,
-    default: 0
-  },
-  price: {
-    type: Number,
-    required: [true, 'Tour must have a price.']
-  }
-});
-
-const Tour = mongoose.model('Tour', tourSchema);
-const testTour = new Tour({
-  name: "London",
-  price: 850
-});
-
-testTour.save().then(doc => {
-  console.log("tour 😃", doc)
-}).catch(err => {
-  console.log("Error 💥", err )
-})
-
-
+// App running
 const app = require('./app');
-
 const port = process.env.PORT || 8000;
 
-// App running
 app.listen(port, () => {
   console.log(`App listen at port ${port}`);
 });
