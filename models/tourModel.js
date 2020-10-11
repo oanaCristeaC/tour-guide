@@ -24,11 +24,11 @@ const tourSchema = new mongoose.Schema({
       type: Number,
       default: 0
     },
-    rattingAverage: {
+    ratingsAverage: {
       type: Number,
       default: 0
     },
-    rattingQuantity: {
+    ratingsQuantity: {
       type: Number,
       default: 0
     },
