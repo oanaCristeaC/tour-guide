@@ -3,7 +3,10 @@ const Tour = require('../models/tourModel')
 exports.getTours = async (req, res) => {
   try {
 
-    /** Filer */
+    /** Filer the tours using 
+     * @find returns only tours withing the query criteria
+     * @params {object|objectId}: =, gt, gte, lt and lte
+    */
 
     // Simple query filter; excluding: page, limit, sort and field
     const queryObj = { ...req.query};
@@ -12,11 +15,15 @@ exports.getTours = async (req, res) => {
 
     // Advance query filter with operators: gt, gte, lt and lte (duration[lte]=5)
     let queryStr = JSON.stringify(queryObj)
+
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`)
-
-
-    /**Sort */
+    console.log("queryStr", queryStr)
     let query = Tour.find(JSON.parse(queryStr));
+
+    /**Sort tour
+     * @sort returns tours sorted on query criteria
+     * @params {object|string} req.query.sort
+    */
 
     if (req.query.sort) {
       // sort by 
@@ -27,15 +34,20 @@ exports.getTours = async (req, res) => {
       query = query.sort('-createdAt')
     }
 
-    /** Field limiting */
-    if( req.query.fields ) {
-      const fields = req.query.fields.split(',').join(' ')
+    /** Field limiting 
+     * @select returns only queried fields 
+     * @params {object|string}
+    */
+    if(req.query.fields) {
 
+      const fields = req.query.fields.split(',').join(' ')
       query = query.select(fields)
+
     } else {
       query = query.select('-__v')
     }
 
+    /** Return result */
     const tours = await query;
     res.status(200).json({
       status: 'Success',
