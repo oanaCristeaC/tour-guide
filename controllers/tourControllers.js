@@ -1,11 +1,11 @@
-const Tour = require('../models/tourModel')
+const Tour = require('../models/tourModel');
 
 exports.getTours = async (req, res) => {
   try {
 
     /** Filer the tours using 
      * @find returns only tours withing the query criteria
-     * @params {object|objectId} - req.query: =, gt, gte, lt and lte
+     * @param {object|objectId} - req.query: =, gt, gte, lt and lte
     */
 
     // Simple query filter; excluding: page, limit, sort and field
@@ -21,7 +21,7 @@ exports.getTours = async (req, res) => {
 
     /**Sort tour
      * @sort returns tours sorted on query criteria
-     * @params {object|string} req.query.sort
+     * @param {object|string} req.query.sort
     */
 
     if (req.query.sort) {
@@ -35,7 +35,7 @@ exports.getTours = async (req, res) => {
 
     /** Field limiting 
      * @select returns only queried fields 
-     * @params {object|string}: req.query.fields
+     * @param {object|string}: req.query.fields
     */
     if(req.query.fields) {
 
@@ -46,20 +46,24 @@ exports.getTours = async (req, res) => {
       query = query.select('-__v')
     }
 
-    /** Pagination */
-
-    const page = req.query.page * 1 //transform into a number
-    const limit = req.query.limit * 1
-    const pageItems = (page - 1) * limit
+    /** Pagination uses
+     * @skip returns number of items to be skipped
+     * @param {number} 
+     * 
+     * @limit returns the no of items to be displayed
+     * @param {number}    
+     **/
+    const page = req.query.page * 1; //transform into a number
+    const limit = req.query.limit * 1;
+    const pageItems = (page - 1) * limit;
     //page 1 = 1-10 11-20 21 -30 31 -40
 
-    const noTours = await Tour.countDocuments();
-    
     if (req.query.page) {
-      query = query.skip(pageItems).limit(limit);
-
+      const noTours = await Tour.countDocuments();
       if (pageItems >= noTours) { throw new Error ('No tours found!') }
     }
+
+    query = query.skip(pageItems).limit(limit);
 
     /** Return result */
     const tours = await query;
