@@ -7,12 +7,14 @@ const {
   getTour,
   updateTour,
   deleteTour,
-  aliasTopTours
+  aliasTopTours,
+  tourStats
 
 } = require('./../controllers/tourControllers');
 
 // Extra tour with a middleware 
-router.route('/top-5-cheap').get(aliasTopTours, getTours)
+router.route('/top-5-cheap').get(aliasTopTours, getTours);
+router.route('/stats').get(tourStats);
 
 router.route('/').get(getTours).post(createTour);
 router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
