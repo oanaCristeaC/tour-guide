@@ -5,7 +5,7 @@ exports.getTours = async (req, res) => {
 
     /** Filer the tours using 
      * @find returns only tours withing the query criteria
-     * @params {object|objectId}: =, gt, gte, lt and lte
+     * @params {object|objectId} - req.query: =, gt, gte, lt and lte
     */
 
     // Simple query filter; excluding: page, limit, sort and field
@@ -17,7 +17,6 @@ exports.getTours = async (req, res) => {
     let queryStr = JSON.stringify(queryObj)
 
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`)
-    console.log("queryStr", queryStr)
     let query = Tour.find(JSON.parse(queryStr));
 
     /**Sort tour
@@ -36,7 +35,7 @@ exports.getTours = async (req, res) => {
 
     /** Field limiting 
      * @select returns only queried fields 
-     * @params {object|string}
+     * @params {object|string}: req.query.fields
     */
     if(req.query.fields) {
 
@@ -45,6 +44,21 @@ exports.getTours = async (req, res) => {
 
     } else {
       query = query.select('-__v')
+    }
+
+    /** Pagination */
+
+    const page = req.query.page * 1 //transform into a number
+    const limit = req.query.limit * 1
+    const pageItems = (page - 1) * limit
+    //page 1 = 1-10 11-20 21 -30 31 -40
+
+    const noTours = await Tour.countDocuments();
+    
+    if (req.query.page) {
+      query = query.skip(pageItems).limit(limit);
+
+      if (pageItems >= noTours) { throw new Error ('No tours found!') }
     }
 
     /** Return result */
