@@ -143,3 +143,27 @@ exports.deleteTour = async (req, res) => {
     })
   }
 };
+
+exports.getMothlyPlan = async (req, res) => {
+
+  const year = req.params.year * 1
+
+  try {
+    const plan = Tour.aggregate([{
+      $unwind: '$startDates'
+    }])
+
+    res.status(204).json({
+      status: 'Success',
+      data: {
+        plan
+      },
+    });
+
+  } catch (error) {
+    res.status(404).json({
+      status: 'Failed',
+      message: error
+    })
+  }
+}
