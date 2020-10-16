@@ -149,11 +149,45 @@ exports.getMothlyPlan = async (req, res) => {
   const year = req.params.year * 1
 
   try {
-    const plan = Tour.aggregate([{
-      $unwind: '$startDates'
-    }])
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates' // break down based on dates
+      },
+      {
 
-    res.status(204).json({
+        $match: { //match only the ones within given year
+          startDates: {
+            $gt: new Date(`${year}-01-01`),
+            $lt: new Date(`${year}-12-31`),
+          }
+        }
+      },
+      {
+        $group: { //group them by month
+          _id: { $month: '$startDates' },
+          numTours: { $sum: 1 },
+          names: { $push: '$name' }
+        }
+      },
+      {
+        $addFields: { // replace the _id key with month
+          month: '$_id'
+        }
+      },
+      {
+        $project: { _id: 0 } // hide _id field
+      },
+      {
+        $sort: { // busiest month firts
+          numTours: -1
+        }
+      },
+      {
+        $limit: 12 // unneccesary here yet
+      }
+    ])
+
+    res.status(200).json({
       status: 'Success',
       data: {
         plan
