@@ -58,6 +58,10 @@ const tourSchema = new mongoose.Schema({
     select: false
   },
   startDates: [Date],
+  vip: {
+    type: Boolean,
+    default: false
+  },
   slug: String
 },
   {
@@ -66,20 +70,36 @@ const tourSchema = new mongoose.Schema({
   }
 );
 
+// Document middleware
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true })
   next();
 });
 
-tourSchema.pre('save', function (next) {
-  console.log("Doc is saving...")
+// Querry middleware
+tourSchema.pre(/^find/, function (next) { // filter out all VIP tours be default
+  this.find({ vip: { $ne: true } })
+  this.startTime = Date.now()
   next();
 });
 
-tourSchema.post('save', function (doc, next) {
-  console.log("Doc has been saved.", doc)
+tourSchema.post(/^find/, function (docs, next) { // filter out all VIP tours be default
+  this.endTime = Date.now()
+  console.log(` Took ${this.startTime - this.endTime} ms`, docs)
   next();
-});
+})
+
+
+
+// tourSchema.pre('save', function (next) {
+//   console.log("Doc is saving...")
+//   next();
+// });
+
+// tourSchema.post('save', function (doc, next) {
+//   console.log("Doc has been saved.", doc)
+//   next();
+// });
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
