@@ -6,7 +6,7 @@ exports.tourStats = async (req, res) => {
   const stats = await Tour.aggregate([
     {
       $match: {
-        ratingsAverage: { $gt: 4.5 }
+        ratingsAverage: { $gte: 4.5 }
       }
     },
     {

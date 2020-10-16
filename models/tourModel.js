@@ -84,22 +84,16 @@ tourSchema.pre(/^find/, function (next) { // filter out all VIP tours be default
 });
 
 tourSchema.post(/^find/, function (docs, next) { // filter out all VIP tours be default
-  this.endTime = Date.now()
-  console.log(` Took ${this.startTime - this.endTime} ms`, docs)
+  console.log(` Took ${this.startTime - Date.now()} ms`);
+  //console.log(docs)
+  next();
+});
+
+// Aggregation middleware
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { vip: { $ne: true } } });
   next();
 })
-
-
-
-// tourSchema.pre('save', function (next) {
-//   console.log("Doc is saving...")
-//   next();
-// });
-
-// tourSchema.post('save', function (doc, next) {
-//   console.log("Doc has been saved.", doc)
-//   next();
-// });
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
