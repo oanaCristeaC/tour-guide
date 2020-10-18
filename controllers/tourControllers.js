@@ -68,20 +68,18 @@ exports.getTours = async (req, res) => {
   }
 };
 
-exports.createTour = async (req, res) => {
-  try {
-    const newTour = await Tour.create(req.body)
+const catchAsync = fn => (req, res, next) => fn(req, res, next).catch(next) // curring
 
-    res.status(200).json({
-      status: 'Success',
-      data: {
-        newTour
-      }
-    })
-  } catch (error) {
-    res.status(404).send(error)
-  }
-};
+exports.createTour = catchAsync(async (req, res, next) => {
+  const newTour = await Tour.create(req.body)
+
+  res.status(200).json({
+    status: 'Success',
+    data: {
+      newTour
+    }
+  })
+});
 
 exports.getTour = async (req, res) => {
   try {
