@@ -1,15 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const validate = require('mongoose-validator');
-const validator = require('validator');
-
-const dificValidator = [
-  validate({
-    validator: 'matches',
-    arguments: ['easy, medium or difficult'],
-    message: 'Difficulty must be: {ARGS[0]}',
-  })
-]
+//const validate = require('mongoose-validator');
 
 const tourSchema = new mongoose.Schema({
   name: {
@@ -31,13 +22,11 @@ const tourSchema = new mongoose.Schema({
   },
   difficulty: {
     type: String,
-    required: [true, 'Tour must have a difficulty.'],
-    trim: true,
-    validate: dificValidator
-    // enum: {
-    //   values: ['easy', 'medium', 'difficult'],
-    //   message: 'Available values for difficulty are: easy, medium or difficult'
-    // }
+    required: [true, 'A tour must have a difficulty'],
+    enum: {
+      values: ['easy', 'medium', 'difficult'],
+      message: 'Difficulty is either: easy, medium, difficult'
+    }
   },
   rating: {
     type: Number,
