@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: [true, 'Password field is required'],
 		minlength: [7, 'A password must have a min length of 7 characters.'],
-		maxlength: [40, 'A name must have a max length of 40 characters.']
+		maxlength: [40, 'A name must have a max length of 40 characters.'],
+		select: false
 	},
 	photo: String,
 	passwordConfirm: {
@@ -33,8 +34,8 @@ const userSchema = new mongoose.Schema({
 				return el === this.password
 			},
 			message: 'Passwords are not the same.'
-		}
-	}
+		},
+	},
 });
 
 userSchema.pre('save', async function (next) {
@@ -45,7 +46,11 @@ userSchema.pre('save', async function (next) {
 
 	this.passwordConfirm = undefined;
 	//this.password = await bcrypt.hash(this.password, 12)
-})
+});
+
+userSchema.methods.checkPass = async function (providedPass, userPass) {
+	return bcrypt.compare(providedPass, userPass)
+}
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
