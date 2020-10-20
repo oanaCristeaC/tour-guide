@@ -9,9 +9,14 @@ const {
   deleteUser,
   updateUser,
 
+  signUp,
+
   checkId,
 } = require('../controllers/userControllers');
 
+router.route('/signup').post(signUp)
+
+// To be ingnored for now
 router.param('id', checkId);
 
 router.route('/').get(getUsers).post(createUser);

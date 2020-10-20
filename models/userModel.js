@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const validator = require('validator')
+const validator = require('validator');
+const bcrypt = require("bcrypt")
 
 const userSchema = new mongoose.Schema({
 	name: {
@@ -10,7 +11,7 @@ const userSchema = new mongoose.Schema({
 		maxlength: [40, 'A name must have a max length of 40 characters.']
 	},
 	email: {
-		type: email,
+		type: String,
 		required: [true, 'Email field is required'],
 		unique: true,
 		lowercase: true,
@@ -25,10 +26,26 @@ const userSchema = new mongoose.Schema({
 	photo: String,
 	passwordConfirm: {
 		type: String,
-		required: [true, 'Please re-type your password.']
+		required: [true, 'Please re-type your password.'],
+		validate: {
+			// This works only on Create and Save. Update user must use save not update
+			validator: function (el) {
+				return el === this.password
+			},
+			message: 'Passwords are not the same.'
+		}
 	}
+});
+
+userSchema.pre('save', async function (next) {
+	if (!this.isModified('password')) return next();
+
+	const salt = await bcrypt.genSalt(12)
+	this.password = await bcrypt.hash(this.password, salt)
+
+	this.passwordConfirm = undefined;
+	//this.password = await bcrypt.hash(this.password, 12)
 })
 
 const User = mongoose.model('User', userSchema);
-
-mondule.exports = User;
+module.exports = User;
