@@ -28,3 +28,7 @@ const userSchema = new mongoose.Schema({
 		required: [true, 'Please re-type your password.']
 	}
 })
+
+const User = mongoose.model('User', userSchema);
+
+mondule.exports = User;
