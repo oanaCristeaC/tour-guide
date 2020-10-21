@@ -23,5 +23,4 @@ app.all('*', (req, res, next) => {
 // Error handelling middleware
 app.use(errorController);
 
-
 module.exports = app;

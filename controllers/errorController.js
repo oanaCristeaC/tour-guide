@@ -12,6 +12,11 @@ const handleValidationErrorDB = err => {
 	return new AppError(`Invalid input data: ${errors.join('. ')}`, 400)
 }
 
+
+const invalidTokenErr = () => new AppError('Invalid signature. Please sign in again.', 401);
+const expiredTokenErr = () => new AppError('Your token has expired. Please sign up again.', 401);
+
+
 const sendDevError = (error, res) => {
 	res.status(error.statusCode).json({
 		status: error.status,
@@ -50,13 +55,19 @@ module.exports = (error, req, res, next) => {
 		let err = { ...error }
 
 		// Get req with unexisting id
-		if (error.name === 'CastError') err = handleCastErrDB(err);
+		if (err.name === 'CastError') err = handleCastErrDB(error);
 
 		// Post with a duplicate fied
-		if (error.code === 11000) err = handleDupFieldsDB(error)
+		if (err.code === 11000) err = handleDupFieldsDB(error)
 
 		// Validation errors: short name, min max rating, difficulty
-		if (error.name === 'ValidationError') err = handleValidationErrorDB(error)
+		if (err.name === 'ValidationError') err = handleValidationErrorDB(error)
+
+		// Token validation
+		if (err.name === "JsonWebTokenError") err = invalidTokenErr();
+		if (err.name === "TokenExpiredError") err = expiredTokenErr();
+
+		if (!err.name) return sendProdError(error, res) //check why spread syntax is not supported
 
 		sendProdError(err, res)
 	}

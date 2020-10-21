@@ -46,6 +46,32 @@ exports.signin = catchAsync(async (req, res, next) => {
 
 });
 
+exports.protect = catchAsync(async (req, res, next) => {
+
+	// 1. Getting token and check if it's there
+	let tokenHeader = req.headers.authorization;
+	let token;
+
+	if (tokenHeader && tokenHeader.startsWith('Bearer')) {
+		token = tokenHeader.split(' ')[1]
+	}
+	// 2. Verify token
+	if (!token) {
+		return new AppError('You are not logged in. Please log in!', 401)
+	}
+	const decoded = jwt.verify(token, process.env.JWT_KEY) // TODO: promisify?
+
+	// 3. Check if owner of the token is still a registered user
+	const tokenOwner = await User.findOne({ _id: decoded.id });
+
+	if (!tokenOwner) return next(new AppError("User with this token does not exist.", 401));
+
+
+	// 4. Check if the user change pasword after the token was issued
+
+	next();
+});
+
 
 
 
