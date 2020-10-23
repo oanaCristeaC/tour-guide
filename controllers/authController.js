@@ -10,8 +10,8 @@ const loginToken = id => {
 // User logic
 exports.signUp = catchAsync(async (req, res, next) => {
 
-	const { name, email, password, passwordConfirm } = req.body
-	const newUser = await User.create({ name, email, password, passwordConfirm });
+	const { name, email, password, passwordConfirm, passChanged } = req.body
+	const newUser = await User.create({ name, email, password, passwordConfirm, passChanged });
 	const jwtToken = loginToken(newUser._id)
 
 	res.status(200).json({
@@ -19,6 +19,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
 		data: {
 			name: newUser.name,
 			email: newUser.email,// this is as an extra check to the select:false
+			passChanged: newUser.passChanged,
 			jwtToken
 		}
 	})
@@ -68,6 +69,9 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 
 	// 4. Check if the user change pasword after the token was issued
+	if (tokenOwner.changedPassAfterToken(decoded.iat)) {
+		return next(new AppError("Your password changed. Please sing in again.", 401))
+	}
 
 	next();
 });
