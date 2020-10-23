@@ -10,14 +10,15 @@ const loginToken = id => {
 // User logic
 exports.signUp = catchAsync(async (req, res, next) => {
 
-	const { name, email, password, passwordConfirm, passChanged } = req.body
-	const newUser = await User.create({ name, email, password, passwordConfirm, passChanged });
+	const { name, email, role, password, passwordConfirm, passChanged } = req.body
+	const newUser = await User.create({ name, email, password, role, passwordConfirm, passChanged });
 	const jwtToken = loginToken(newUser._id)
 
 	res.status(200).json({
 		status: 'Succes',
 		data: {
 			name: newUser.name,
+			role: newUser.role,
 			email: newUser.email,// this is as an extra check to the select:false
 			passChanged: newUser.passChanged,
 			jwtToken
@@ -58,7 +59,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 	}
 	// 2. Verify token
 	if (!token) {
-		return new AppError('You are not logged in. Please log in!', 401)
+		return next(new AppError('You are not logged in. Please log in!', 401));
 	}
 	const decoded = jwt.verify(token, process.env.JWT_KEY) // TODO: promisify?
 
@@ -69,14 +70,24 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 
 	// 4. Check if the user change pasword after the token was issued
-	if (tokenOwner.changedPassAfterToken(decoded.iat)) {
+	const changed = await tokenOwner.changedPassAfterToken(decoded.iat)
+	if (changed) {
 		return next(new AppError("Your password changed. Please sing in again.", 401))
 	}
+
+	req.user = tokenOwner;
 
 	next();
 });
 
-
-
+// Allow only to admin and tour-lead 
+exports.restrictTo = (...params) => {
+	return (req, res, next) => {
+		if (!params.includes(req.user.role)) {
+			return next(new AppError("You are not allowd to detele this tour.", 403))
+		};
+		next();
+	};
+}
 
 

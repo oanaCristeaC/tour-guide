@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema({
 		lowercase: true,
 		validate: [validator.isEmail, 'Please provide a vlaid email address.']
 	},
+	role: {
+		type: String,
+		enum: ['user', 'guide', 'lead-guide', 'admin'],
+		default: 'user'
+	},
 	password: {
 		type: String,
 		required: [true, 'Password field is required'],
@@ -49,9 +54,11 @@ userSchema.pre('save', async function (next) {
 	//this.password = await bcrypt.hash(this.password, 12)
 });
 
+
 userSchema.methods.checkPass = async function (providedPass, userPass) {
 	return bcrypt.compare(providedPass, userPass)
 };
+
 
 userSchema.methods.changedPassAfterToken = async function (JWTTimeStamp) {
 
