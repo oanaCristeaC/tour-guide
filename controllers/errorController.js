@@ -36,7 +36,7 @@ const sendProdError = (error, res) => {
 		})
 	} else {
 		// Unknown programming error which we dont want to leak to the client
-		console.log("ERROR :japanese_goblin:", error)
+		console.log("ERROR :japanese_goblin:", error) // TODO: remove
 		res.status(500).json({
 			status: 'Error',
 			message: 'Something went wrong!'
@@ -66,8 +66,6 @@ module.exports = (error, req, res, next) => {
 		// Token validation
 		if (err.name === "JsonWebTokenError") err = invalidTokenErr();
 		if (err.name === "TokenExpiredError") err = expiredTokenErr();
-
-		if (!err.name) return sendProdError(error, res) //check why spread syntax is not supported
 
 		sendProdError(err, res)
 	}
