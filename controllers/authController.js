@@ -45,8 +45,8 @@ exports.signin = catchAsync(async (req, res, next) => {
 			token
 		}
 	})
-
 });
+
 
 exports.protect = catchAsync(async (req, res, next) => {
 
@@ -88,6 +88,39 @@ exports.restrictTo = (...params) => {
 		};
 		next();
 	};
+};
+
+exports.forgotpassword = catchAsync(async (req, res, next) => {
+	// Get user
+	const user = await User.findOne({ email: req.body.email })
+	if (!user) return next(new AppError("There is not an account with this email address.", 403)) // Not goo ides for sercurity reason
+
+	// if(! user){
+	// 	return res.status(200).json({
+	// 		status: 'Success',
+	// 		data: {
+	// 			message: "If there is an account with this email, you shpould have received an email to reset your pass."
+	// 		}
+	// 	})
+	// }
+
+	// Generate a temporary pass 
+	const tempPass = user.generateTempPass()
+	// Save it to data base encripted
+	const newUser = await user.save({ validateBeforeSave: false })
+
+	return res.status(200).json({
+		status: 'Success',
+		data: {
+			message: "If there is an account with this email, you shpould have received an email to reset your pass.",
+			tempPass
+		}
+	})
+
+});
+
+exports.resetpassword = async (req, res, next) => {
+
 }
 
 

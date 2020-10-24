@@ -1,7 +1,7 @@
 // User endpoint
 const express = require('express');
 const router = express.Router();
-const { signUp, signin } = require('../controllers/authController')
+const { signUp, signin, resetpassword, forgotpassword } = require('../controllers/authController')
 
 const {
   getUsers,
@@ -15,6 +15,9 @@ const {
 
 router.route('/signup').post(signUp);
 router.route('/signin').post(signin);
+
+router.route('/forgotpassword').post(forgotpassword);
+router.route('/resetpassword').post(resetpassword);
 
 // To be ingnored for now
 router.param('id', checkId);

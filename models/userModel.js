@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
 	name: {
@@ -42,6 +43,8 @@ const userSchema = new mongoose.Schema({
 		},
 	},
 	passChanged: Date,
+	temporaryPass: String,
+	tempPassExpiration: Date
 });
 
 userSchema.pre('save', async function (next) {
@@ -67,7 +70,18 @@ userSchema.methods.changedPassAfterToken = async function (JWTTimeStamp) {
 	}
 
 	return false
-}
+};
+
+
+userSchema.methods.generateTempPass = function () {
+
+
+	const tempPass = crypto.randomBytes(32).toString('hex');
+	this.temporaryPass = crypto.createHash('sha256').update(tempPass).digest('hex');
+	this.tempPassExpiration = Date.now() + 10 * 60 * 1000 // in miliseconds
+
+	return tempPass;
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
