@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
+const sendEmail = require('../utils/email');
 
 const loginToken = id => {
 	return jwt.sign({ id }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES_IN })
@@ -15,7 +16,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
 	const jwtToken = loginToken(newUser._id)
 
 	res.status(200).json({
-		status: 'Succes',
+		status: 'Success',
 		data: {
 			name: newUser.name,
 			role: newUser.role,
@@ -69,7 +70,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 	if (!tokenOwner) return next(new AppError("User with this token does not exist.", 401));
 
 
-	// 4. Check if the user change pasword after the token was issued
+	// 4. Check if the user change password after the token was issued
 	const changed = await tokenOwner.changedPassAfterToken(decoded.iat)
 	if (changed) {
 		return next(new AppError("Your password changed. Please sing in again.", 401))
@@ -84,7 +85,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.restrictTo = (...params) => {
 	return (req, res, next) => {
 		if (!params.includes(req.user.role)) {
-			return next(new AppError("You are not allowd to detele this tour.", 403))
+			return next(new AppError("You are not allowed to delete this tour.", 403))
 		};
 		next();
 	};
@@ -93,29 +94,41 @@ exports.restrictTo = (...params) => {
 exports.forgotpassword = catchAsync(async (req, res, next) => {
 	// Get user
 	const user = await User.findOne({ email: req.body.email })
-	if (!user) return next(new AppError("There is not an account with this email address.", 403)) // Not goo ides for sercurity reason
+	const response = {
+		status: 'Success',
+		message: "If there is an account with this email, you should have received an email to reset your pass."
+	}
 
-	// if(! user){
-	// 	return res.status(200).json({
-	// 		status: 'Success',
-	// 		data: {
-	// 			message: "If there is an account with this email, you shpould have received an email to reset your pass."
-	// 		}
-	// 	})
-	// }
+	//if (!user) return next(new AppError("There is not an account with this email address.", 403)) // Not good idea for security reason
+	if (!user) return res.status(200).json({response})
 
 	// Generate a temporary pass 
-	const tempPass = user.generateTempPass()
-	// Save it to data base encripted
-	const newUser = await user.save({ validateBeforeSave: false })
+	const tempToken = user.generateTempToken()
+	// Save it to data base encrypted
+	await user.save({ validateBeforeSave: false });
+	// Generate reset pass link with the token
+	const link = `${req.protocol}://${req.get('host')}/api/v1/users/resetpassword/${tempToken}`//http://localhost:3000/api/v1/users/resetpassword/:tempToken
+	const message = `Have you forgotten your password?\nUse the this link ${link} to reset it.\nIf you haven't request a reset of your password, ignore this message.`;
 
-	return res.status(200).json({
-		status: 'Success',
-		data: {
-			message: "If there is an account with this email, you shpould have received an email to reset your pass.",
-			tempPass
-		}
-	})
+	const emailOptions = {
+		email: user.email,
+		subject: 'Reset password',
+		message,
+	}
+
+	// Send forgot pass email with a reset link
+	try {
+		await sendEmail(emailOptions);
+		res.status(200).json({response})
+	
+	} catch (error) {
+		//this.user.passChanged = undefined; //??
+		this.user.tempEncrpToken = undefined;
+		this.user.tempTokenExpiration = undefined;
+		await user.save({ validateBeforeSave: false })
+
+		return next(new AppError('There was an error resetting your password. Please try again later!', 500))
+	}
 
 });
 

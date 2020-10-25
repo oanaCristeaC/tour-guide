@@ -43,8 +43,8 @@ const userSchema = new mongoose.Schema({
 		},
 	},
 	passChanged: Date,
-	temporaryPass: String,
-	tempPassExpiration: Date
+	tempEncrpToken: String,
+	tempTokenExpiration: Date
 });
 
 userSchema.pre('save', async function (next) {
@@ -73,14 +73,13 @@ userSchema.methods.changedPassAfterToken = async function (JWTTimeStamp) {
 };
 
 
-userSchema.methods.generateTempPass = function () {
+userSchema.methods.generateTempToken = function () {
 
+	const tempToken = crypto.randomBytes(32).toString('hex');
+	this.tempEncrpToken = crypto.createHash('sha256').update(tempToken).digest('hex');
+	this.tempTokenExpiration = Date.now() + 10 * 60 * 1000 // in milliseconds
 
-	const tempPass = crypto.randomBytes(32).toString('hex');
-	this.temporaryPass = crypto.createHash('sha256').update(tempPass).digest('hex');
-	this.tempPassExpiration = Date.now() + 10 * 60 * 1000 // in miliseconds
-
-	return tempPass;
+	return tempToken;
 };
 
 const User = mongoose.model('User', userSchema);

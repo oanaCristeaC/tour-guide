@@ -17,9 +17,9 @@ router.route('/signup').post(signUp);
 router.route('/signin').post(signin);
 
 router.route('/forgotpassword').post(forgotpassword);
-router.route('/resetpassword').post(resetpassword);
+router.route('/resetpassword/:tempToken').patch(resetpassword);
 
-// To be ingnored for now
+// To be ignored for now
 router.param('id', checkId);
 
 router.route('/').get(getUsers).post(createUser);
