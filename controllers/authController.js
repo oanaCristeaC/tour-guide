@@ -9,6 +9,16 @@ const loginToken = id => {
 	return jwt.sign({ id }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES_IN })
 }
 
+const createAndSendToken = (user, statusCode, res) => { // TODO: use this
+	const jwtToken = loginToken(user._id)
+	res.status(statusCode).json({
+		status: 'Success',
+		data: {
+			jwtToken
+		}
+	})
+}
+
 // User logic
 exports.signUp = catchAsync(async (req, res, next) => {
 
@@ -19,9 +29,6 @@ exports.signUp = catchAsync(async (req, res, next) => {
 	res.status(200).json({
 		status: 'Success',
 		data: {
-			name: newUser.name,
-			email: newUser.email,// this is as an extra check to the select:false
-			passChanged: newUser.passChanged,
 			jwtToken
 		}
 	})
@@ -53,6 +60,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 	// 1. Getting token and check if it's there
 	let tokenHeader = req.headers.authorization;
+	if (!tokenHeader) return next(new AppError('You are not logged in. Please log in!', 401));
 	let token;
 
 	if (tokenHeader && tokenHeader.startsWith('Bearer')) {
@@ -91,7 +99,7 @@ exports.restrictTo = (...params) => {
 	};
 };
 
-exports.forgotpassword = catchAsync(async (req, res, next) => {
+exports.forgotPassword = catchAsync(async (req, res, next) => {
 	// Get user
 	const user = await User.findOne({ email: req.body.email })
 	const response = {
@@ -132,11 +140,10 @@ exports.forgotpassword = catchAsync(async (req, res, next) => {
 
 });
 
-exports.resetpassword = catchAsync(async (req, res, next) => {
+exports.resetPassword = catchAsync(async (req, res, next) => {
 
 	// Get the user based on encrypted token
-	const token = req.params.tempToken
-	const tempEncrpToken = crypto.createHash('sha256').update(token).digest('hex');
+	const tempEncrpToken = crypto.createHash('sha256').update(req.params.tempToken).digest('hex');
 	const user = await User.findOne({tempEncrpToken, tempTokenExpiration: {$gt: Date.now()} });
 
 	if (!user) return next(new AppError('Your link is invalid or expired. Please request a new password again.', 400));
@@ -146,15 +153,49 @@ exports.resetpassword = catchAsync(async (req, res, next) => {
 	user.tempEncrpToken = undefined;
 	user.tempTokenExpiration = undefined;
 
+	//passChanged is updated on pre.save
+
 	await user.save();
+	const token = loginToken(user._id)
 
 	res.status(200).json({
 		status: 'Success',
 		data: {
-			message: 'Your password was successfully changed.'
+			message: 'Your password was successfully updated.',
+			token
 		}
 	})
-
 });
 
+exports.updatePassword = catchAsync(async (req, res, next) => {
 
+	// 1. Get the user 
+	const user = await User.findById({_id: req.user._id}).select('+password');
+
+	if (!req.body.currentPassword) return next(new AppError('Please provide the current password.', 400));
+	if (! req.body.password || req.body.password) return next(new AppError('Please provide new password and confirmation password.', 400));
+	// 2. Check if provided pass is valid
+	if (!user || !(await user.checkPass(req.body.currentPassword, user.password))) return next(new AppError('Incorrect username or password', 401));
+	
+	// 3. Update the old pass
+	user.password = req.body.password;
+	user.passwordConfirm = req.body.password;
+	user.tempEncrpToken = undefined;
+	user.tempTokenExpiration = undefined;
+
+	//passChanged is updated on pre.save
+
+	await user.save();
+	// 4. Log the user in / send the JWT
+	const token = loginToken(user._id)
+	res.status(200).json({
+		status: 'Success',
+		data: {
+			message: 'Your password was successfully updated.',
+			token
+		}
+	})
+})
+
+
+// TODO: double check this

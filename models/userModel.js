@@ -69,10 +69,7 @@ userSchema.methods.checkPass = async function (providedPass, userPass) {
 
 
 userSchema.methods.changedPassAfterToken = async function (JWTTimeStamp) {
-
-	if (this.passChanged) {
-		return JWTTimeStamp < this.passChanged.getTime() / 1000
-	}
+	if (this.passChanged)	return JWTTimeStamp < this.passChanged.getTime() / 1000;
 
 	return false
 };

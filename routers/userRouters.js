@@ -1,7 +1,7 @@
 // User endpoint
 const express = require('express');
 const router = express.Router();
-const { signUp, signin, resetpassword, forgotpassword } = require('../controllers/authController')
+const { signUp, signin, resetPassword, forgotPassword, updatePassword, protect } = require('../controllers/authController')
 
 const {
   getUsers,
@@ -16,8 +16,9 @@ const {
 router.route('/signup').post(signUp);
 router.route('/signin').post(signin);
 
-router.route('/forgotpassword').post(forgotpassword);
-router.route('/resetpassword/:tempToken').patch(resetpassword);
+router.route('/forgotpassword').post(forgotPassword);
+router.route('/resetpassword/:tempToken').patch(resetPassword);
+router.route('/updatepassword').patch(protect, updatePassword)
 
 // To be ignored for now
 router.param('id', checkId);
