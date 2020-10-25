@@ -3,6 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
+const crypto = require('crypto')
 
 const loginToken = id => {
 	return jwt.sign({ id }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES_IN })
@@ -19,7 +20,6 @@ exports.signUp = catchAsync(async (req, res, next) => {
 		status: 'Success',
 		data: {
 			name: newUser.name,
-			role: newUser.role,
 			email: newUser.email,// this is as an extra check to the select:false
 			passChanged: newUser.passChanged,
 			jwtToken
@@ -132,8 +132,29 @@ exports.forgotpassword = catchAsync(async (req, res, next) => {
 
 });
 
-exports.resetpassword = async (req, res, next) => {
+exports.resetpassword = catchAsync(async (req, res, next) => {
 
-}
+	// Get the user based on encrypted token
+	const token = req.params.tempToken
+	const tempEncrpToken = crypto.createHash('sha256').update(token).digest('hex');
+	const user = await User.findOne({tempEncrpToken, tempTokenExpiration: {$gt: Date.now()} });
+
+	if (!user) return next(new AppError('Your link is invalid or expired. Please request a new password again.', 400));
+
+	user.password = req.body.password;
+	user.passwordConfirm = req.body.passwordConfirm;
+	user.tempEncrpToken = undefined;
+	user.tempTokenExpiration = undefined;
+
+	await user.save();
+
+	res.status(200).json({
+		status: 'Success',
+		data: {
+			message: 'Your password was successfully changed.'
+		}
+	})
+
+});
 
 

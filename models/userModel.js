@@ -57,6 +57,11 @@ userSchema.pre('save', async function (next) {
 	//this.password = await bcrypt.hash(this.password, 12)
 });
 
+userSchema.pre('save', async function(next) {
+	if (this.isNew || !this.isModified('password')) return next();
+	this.passChanged = Date.now() - 1000 // This is in case the token is generated few milliseconds before save
+	next();
+})
 
 userSchema.methods.checkPass = async function (providedPass, userPass) {
 	return bcrypt.compare(providedPass, userPass)
@@ -77,7 +82,7 @@ userSchema.methods.generateTempToken = function () {
 
 	const tempToken = crypto.randomBytes(32).toString('hex');
 	this.tempEncrpToken = crypto.createHash('sha256').update(tempToken).digest('hex');
-	this.tempTokenExpiration = Date.now() + 10 * 60 * 1000 // in milliseconds
+	this.tempTokenExpiration = Date.now() + 10 * 60 * 1000 // 10 min extra 
 
 	return tempToken;
 };
