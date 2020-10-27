@@ -11,17 +11,18 @@ dotenv.config({
   path: './config.env',
 });
 
-
 // Connection to DB
-const db = process.env.DB.replace('<PASSWORD>', process.env.DB_PASS)
+const db = process.env.DB.replace('<PASSWORD>', process.env.DB_PASS);
 
-mongoose.connect(db, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: true,
-  useUnifiedTopology: true
-
-}).then(() => console.log("DB connection Successful"));
+mongoose
+  .connect(db, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  })
+  .then(() => console.log('DB connection Successful'));
 
 // App running
 const app = require('./app');
@@ -31,7 +32,7 @@ const server = app.listen(port, () => {
   console.log(`App listen at port ${port}`);
 });
 
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   console.log('UNHANDLED REJECTION! 💥 Shutting down...');
   console.log(err.name, err.message);
   server.close(() => {

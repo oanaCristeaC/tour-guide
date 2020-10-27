@@ -298,7 +298,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   const options = ['name', 'email'];
   const data = filterData(req.body, options);
-  const user = await User.findAndModify({ _id: req.user._id }, data, {
+  const user = await User.findByIdAndUpdate({ _id: req.user._id }, data, {
     new: true,
     runValidators: true,
   });
@@ -313,7 +313,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
  */
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findAndModify({ _id: res.user._id }, { active: false });
+  await User.findByIdAndUpdate({ _id: req.user._id }, { active: false });
 
   res.status(204).json({
     status: 'Success',
