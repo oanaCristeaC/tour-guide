@@ -27,11 +27,23 @@ const loginToken = (id) => {
  *
  */
 const createAndSendToken = (user, statusCode, res, options = {}) => {
+  user.password = undefined;
   const jwtToken = loginToken(user._id);
+
+  const cookieJWT = {
+    httpOnly: true,
+    expires:
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000, // to millisecond: h m s mils
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieJWT.secure = true;
+
+  res.cookie('jwt', cookieJWT);
   res.status(statusCode).json({
     status: 'Success',
     data: {
       jwtToken,
+      user,
       ...options,
     },
   });
@@ -76,12 +88,8 @@ exports.signUp = catchAsync(async (req, res, next) => {
     passwordConfirm,
     passChanged,
   });
-  const options = {
-    name: newUser.name,
-    email: newUser.email,
-  };
 
-  createAndSendToken(newUser, 201, res, options);
+  createAndSendToken(newUser, 201, res);
 });
 
 /**
@@ -92,6 +100,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
  *
  */
 
+// TODO: Limit the request to 10 tries then allows tries in 1 h
 exports.signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password)
@@ -185,7 +194,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 									If you haven't request a reset of your password, ignore this message.`;
 
   const emailOptions = {
-    email: user.email,
     subject: 'Reset password',
     message,
   };
