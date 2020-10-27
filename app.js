@@ -5,23 +5,33 @@ const errorController = require('./controllers/errorController');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
 // app.set('trust proxy', 1);
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 60 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
 });
-// Set security headers
-app.use(helmet());
-app.use('/api', limiter);
-app.use(express.json({ limit: '10kb' }));
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+// Set security headers
+app.use(helmet());
+app.use('/api', limiter);
+app.use(express.json({ limit: '10kb' }));
+// Data sanitization against NoSql attacks
+//searches for any keys in objects that begin with a $ sign or contain a .,
+//from req.body, req.query or req.params
+app.use(mongoSanitize());
+/* make sure this comes before any routes */
+// Data sanitization against XSS (cross sides scripts) attacks
+app.use(xss());
 
 const toursRouter = require('./routers/tourRouters');
 const usersRouter = require('./routers/userRouters');
