@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
@@ -32,6 +33,19 @@ app.use(mongoSanitize());
 /* make sure this comes before any routes */
 // Data sanitization against XSS (cross sides scripts) attacks
 app.use(xss());
+//protect against HTTP Parameter Pollution attacks
+app.use(
+  hpp({
+    whitelist: [
+      'ratingsAverage',
+      'startDates',
+      'duration',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  })
+);
 
 const toursRouter = require('./routers/tourRouters');
 const usersRouter = require('./routers/userRouters');
