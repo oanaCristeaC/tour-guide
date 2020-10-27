@@ -16,7 +16,7 @@ const limiter = rateLimit({
 });
 // Set security headers
 app.use(helmet());
-app.use(limiter);
+app.use('/api', limiter);
 app.use(express.json({ limit: '10kb' }));
 
 if (process.env.NODE_ENV === 'development') {
