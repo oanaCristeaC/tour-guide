@@ -4,6 +4,7 @@ const AppError = require('./utils/appError');
 const errorController = require('./controllers/errorController');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
@@ -13,9 +14,10 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
 });
-
+// Set security headers
+app.use(helmet());
 app.use(limiter);
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
