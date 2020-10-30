@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const Users = require('./userModel');
+const User = require('./userModel');
 //const validate = require('mongoose-validator');
 
 const tourSchema = new mongoose.Schema(
@@ -143,7 +143,7 @@ tourSchema.pre('aggregate', function (next) {
 // Test get the embedded users guides
 tourSchema.pre('save', async function (next) {
   const guidesPromise = this.guides.map(
-    async (guideId) => await Users.findById(guideId)
+    async (guideId) => await User.findById(guideId)
   );
   this.guides = await Promise.all(guidesPromise);
   next();
