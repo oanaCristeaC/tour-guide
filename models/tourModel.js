@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const User = require('./userModel');
+//const User = require('./userModel');
 //const validate = require('mongoose-validator');
 
 const tourSchema = new mongoose.Schema(
@@ -12,7 +12,7 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       minlength: [5, `A tour name must have a min of 5 characters`],
       maxlength: [40, 'A tour name must have a max of 40 characters'],
-      //validate: [validator.isAlpha, 'Nume must have only letters'] // does not allow spaces
+      //validate: [validator.isAlpha, 'Name must have only letters'] // does not allow spaces
     },
     duration: {
       type: Number,
@@ -68,7 +68,7 @@ const tourSchema = new mongoose.Schema(
     },
     imageCover: {
       type: String,
-      //required: [true, 'A tour must have cover image.'],
+      required: [true, 'A tour must have cover image.'],
     },
     images: [String],
     createdAt: {
@@ -104,7 +104,7 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: Array,
+    guides: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
     slug: String,
   },
   {
@@ -140,14 +140,14 @@ tourSchema.pre('aggregate', function (next) {
   next();
 });
 
-// Test get the embedded users guides
-tourSchema.pre('save', async function (next) {
-  const guidesPromise = this.guides.map(
-    async (guideId) => await User.findById(guideId)
-  );
-  this.guides = await Promise.all(guidesPromise);
-  next();
-});
+// // Test get the embedded users guides
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromise = this.guides.map(
+//     async (guideId) => await User.findById(guideId)
+//   );
+//   this.guides = await Promise.all(guidesPromise);
+//   next();
+// });
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;

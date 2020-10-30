@@ -40,9 +40,20 @@ exports.getUser = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteUser = (req, res) => {
-  res.sendStatus(500);
-};
+exports.deleteUser = catchAsync(async (req, res, next) => {
+  const id = req.params._id;
+  const user = await User.deleteOne(id);
+  if (!user) {
+    return next(new AppError(`No user exists with ${id}`, 404));
+  }
+
+  res.status(200).json({
+    status: 'Success',
+    data: {
+      user,
+    },
+  });
+});
 
 exports.updateUser = (req, res) => {
   res.sendStatus(500);
