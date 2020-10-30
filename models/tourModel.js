@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const Users = require('./userModel');
 //const validate = require('mongoose-validator');
 
 const tourSchema = new mongoose.Schema(
@@ -53,7 +54,7 @@ const tourSchema = new mongoose.Schema(
         validator: function (val) {
           return val < this.price;
         },
-        message: 'Dicount price must be lower than the price.',
+        message: 'Discount price must be lower than the price.',
       },
     },
     summary: {
@@ -67,7 +68,7 @@ const tourSchema = new mongoose.Schema(
     },
     imageCover: {
       type: String,
-      required: [true, 'A tour must have cover image.'],
+      //required: [true, 'A tour must have cover image.'],
     },
     images: [String],
     createdAt: {
@@ -103,6 +104,7 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    guides: Array,
     slug: String,
   },
   {
@@ -117,7 +119,7 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
-// Querry middleware
+// Query middleware
 tourSchema.pre(/^find/, function (next) {
   // filter out all VIP tours be default
   this.find({ vip: { $ne: true } });
@@ -135,6 +137,15 @@ tourSchema.post(/^find/, function (docs, next) {
 // Aggregation middleware
 tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { vip: { $ne: true } } });
+  next();
+});
+
+// Test get the embedded users guides
+tourSchema.pre('save', async function (next) {
+  const guidesPromise = this.guides.map(
+    async (guideId) => await Users.findById(guideId)
+  );
+  this.guides = await Promise.all(guidesPromise);
   next();
 });
 
