@@ -35,6 +35,6 @@ router.route('/delete-me').delete(protect, deleteMe);
 router.param('id', checkId);
 
 router.route('/').get(getUsers).post(createUser);
-router.route('/:id').get(getUser).delete(deleteUser).patch(updateUser);
+router.route('/:_id').get(getUser).delete(deleteUser).patch(updateUser);
 
 module.exports = router;

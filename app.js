@@ -8,6 +8,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const toursRouter = require('./routers/tourRouters');
+const usersRouter = require('./routers/userRouters');
 
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
@@ -47,8 +49,6 @@ app.use(
   })
 );
 
-const toursRouter = require('./routers/tourRouters');
-const usersRouter = require('./routers/userRouters');
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
 
@@ -57,7 +57,7 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Route ${req.originalUrl} can't be found.`, 404));
 });
 
-// Error handelling middleware
+// Error chandelling middleware
 app.use(errorController);
 
 module.exports = app;

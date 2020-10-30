@@ -11,23 +11,34 @@ exports.checkId = (req, res, next, val) => {
 };
 
 exports.getUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find()
+  const users = await User.find();
 
   res.status(200).json({
     status: 'Success',
     data: {
-      users
-    }
-  })
+      users,
+    },
+  });
 });
 
 exports.createUser = (req, res) => {
   res.sendStatus(500);
 };
 
-exports.getUser = (req, res) => {
-  res.sendStatus(500);
-};
+exports.getUser = catchAsync(async (req, res, next) => {
+  const id = req.params._id;
+  const user = await User.findById(id);
+  if (!user) {
+    return next(new AppError(`No user exists with ${id}`, 404));
+  }
+
+  res.status(200).json({
+    status: 'Success',
+    data: {
+      user,
+    },
+  });
+});
 
 exports.deleteUser = (req, res) => {
   res.sendStatus(500);

@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Email field is required'],
     unique: true,
     lowercase: true,
-    validate: [validator.isEmail, 'Please provide a vlaid email address.'],
+    validate: [validator.isEmail, 'Please provide a valid email address.'],
   },
   role: {
     type: String,
@@ -42,7 +42,6 @@ const userSchema = new mongoose.Schema({
     validate: {
       // This only works on CREATE and SAVE!!!
       validator: function (el) {
-        console.log('pass', el, this.password);
         return el === this.password;
       },
       message: 'Passwords are not the same!',
