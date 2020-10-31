@@ -155,7 +155,7 @@ exports.restrictTo = (...params) => {
   return (req, res, next) => {
     if (!params.includes(req.user.role))
       return next(
-        new AppError('You are not allowed to delete this tour.', 403)
+        new AppError('You are not allowed to modify this tour.', 403) // send a proper message for each request
       );
 
     next();

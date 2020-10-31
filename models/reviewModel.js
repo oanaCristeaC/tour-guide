@@ -17,20 +17,16 @@ const reviewSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    user: [
-      {
-        type: mongoose.Schema.ObjectId,
-        path: 'User',
-        required: [true, 'Review must belong to a user.'],
-      },
-    ],
-    tour: [
-      {
-        type: mongoose.Schema.ObjectId,
-        path: 'Tour',
-        required: [true, 'Review must be on a tour.'],
-      },
-    ],
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: [true, 'Review must belong to a user.'],
+    },
+    tour: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Tour',
+      required: [true, 'Review must be on a tour.'],
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -39,8 +35,11 @@ const reviewSchema = new mongoose.Schema(
 );
 
 reviewSchema.pre(/^find/, function (next) {
-  this.populate({ path: 'User', select: '-__v -passChanged' });
-  this.populate({ path: 'Tour' });
+  this.populate({ path: 'user', select: 'name photo' }).populate({
+    //TODO: get rid of the guides and tour durationWeeks
+    path: 'tour',
+    select: 'name',
+  });
   next();
 });
 
