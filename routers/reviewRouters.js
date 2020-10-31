@@ -14,7 +14,7 @@ router
   .get(protect, getReviews)
   .post(protect, restrictTo('user'), createReview);
 router
-  .route('/:_id')
+  .route('/:reviewId')
   .get(getReview)
   .delete(protect, deleteReview)
   .patch(protect, updateReview);
