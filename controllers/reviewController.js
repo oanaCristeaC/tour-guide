@@ -12,9 +12,11 @@ exports.getReviews = catchAsync(async (req, res, next) => {
 });
 
 exports.createReview = catchAsync(async (req, res, next) => {
-  const user = req.user._id;
-  const { review, rating, tour } = req.body; // sterilization
-  const newReview = await Review.create({ review, rating, tour, user });
+  const user = req.user._id ? req.user._id : req.body.user;
+  const tour = req.params.tourId ? req.params.tourId : req.body.tour;
+
+  const { review, rating } = req.body; // sterilization
+  const newReview = await Review.create({ review, rating, user, tour });
   res.status(201).json({
     data: {
       newReview,
@@ -23,7 +25,7 @@ exports.createReview = catchAsync(async (req, res, next) => {
 });
 
 exports.getReview = catchAsync(async (req, res, next) => {
-  const id = req.params._id;
+  const id = req.params.reviewId;
   const review = await Review.findById(id);
   if (!review)
     return next(new AppError(`The review with ${id} could not be fount.`, 400));
@@ -36,7 +38,7 @@ exports.getReview = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteReview = catchAsync(async (req, res, next) => {
-  const id = req.params._id;
+  const id = req.params.reviewId;
   const review = await Review.findByIdAndDelete(id);
   if (!review)
     return next(new AppError(`The review with ${id} could not be fount.`, 400));
@@ -47,7 +49,7 @@ exports.deleteReview = catchAsync(async (req, res, next) => {
 });
 
 exports.updateReview = catchAsync(async (req, res, next) => {
-  const id = req.params._id;
+  const id = req.params.reviewId;
   if (!id)
     return next(new AppError(`The review with ${id} could not be fount.`, 400));
 
