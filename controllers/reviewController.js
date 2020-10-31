@@ -3,7 +3,12 @@ const catchAsync = require('../utils/catchAsync');
 const Review = require('../models/reviewModel');
 
 exports.getReviews = catchAsync(async (req, res, next) => {
-  const reviews = await Review.find();
+  // Take advantage of '/:tourId/reviews' which will end-up here '/'
+
+  const tour = req.params.tourId ? { tour: req.params.tourId } : {}; // one tour or all
+  console.log('tour', tour, req.params.tourId);
+
+  const reviews = await Review.find(tour);
   res.status(200).json({
     data: {
       reviews,
