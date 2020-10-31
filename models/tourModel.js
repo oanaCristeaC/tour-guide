@@ -113,15 +113,20 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
-// Document middleware
+/**
+ *
+ * Middleware which sets the slug field value to the tour name
+ *
+ */
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
-// Query middleware
+/**
+ * Query middleware to hide the tours that are VIP
+ */
 tourSchema.pre(/^find/, function (next) {
-  // filter out all VIP tours be default
   this.find({ vip: { $ne: true } });
   this.startTime = Date.now();
   next();
@@ -134,9 +139,26 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-// Aggregation middleware
+/**
+ *
+ * Aggregation middleware to exclude the VIP tours from the statistics
+ *
+ */
 tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { vip: { $ne: true } } });
+  next();
+});
+
+/**
+ *
+ * Middleware for populating the reference guide field.
+ *
+ */
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passChanged',
+  });
   next();
 });
 
@@ -149,6 +171,11 @@ tourSchema.pre('aggregate', function (next) {
 //   next();
 // });
 
+/**
+ *
+ * Middleware to transform on the fly the duration on weeks
+ *
+ */
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
