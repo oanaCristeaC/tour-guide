@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, restrictTo } = require('../controllers/authController');
-const { createReview, getReviews } = require('../controllers/reviewController');
+const reviewRouter = require('./reviewRouters');
 
 const {
   getTours,
@@ -14,6 +14,13 @@ const {
   getMothlyPlan,
 } = require('./../controllers/tourControllers');
 
+/**
+ *
+ * Reroute to review whenever this route is met
+ *
+ */
+router.use('/:tourId/reviews', reviewRouter);
+
 // Extra tour with a middleware
 router.route('/top-5-cheap').get(aliasTopTours, getTours);
 router.route('/stats').get(tourStats);
@@ -25,11 +32,5 @@ router
   .get(getTour)
   .patch(updateTour)
   .delete(protect, restrictTo('admin', 'tour-lead'), deleteTour);
-
-// TODO: refactor
-router
-  .route('/:tourId/reviews')
-  .get(getReviews)
-  .post(protect, restrictTo('user'), createReview);
 
 module.exports = router;

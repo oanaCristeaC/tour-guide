@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const { protect, restrictTo } = require('../controllers/authController');
 const {
   getReviews,
@@ -9,6 +9,7 @@ const {
   updateReview,
 } = require('../controllers/reviewController');
 
+// Routers '/' or '/:tourId/reviews' will be reroute to '/' due to mergeParams
 router
   .route('/')
   .get(protect, getReviews)
