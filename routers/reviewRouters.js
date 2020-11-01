@@ -7,15 +7,17 @@ const {
   getReview,
   deleteReview,
   updateReview,
+
+  setTourIds,
 } = require('../controllers/reviewController');
 
-// Routers '/' or '/:tourId/reviews' will be reroute to '/' due to mergeParams
+// Routers '/' or '/:id/reviews' will be reroute to '/' due to mergeParams
 router
   .route('/')
   .get(protect, getReviews)
-  .post(protect, restrictTo('user'), createReview);
+  .post(protect, restrictTo('user'), setTourIds, createReview);
 router
-  .route('/:reviewId')
+  .route('/:id')
   .get(getReview)
   .delete(protect, deleteReview)
   .patch(protect, updateReview);
