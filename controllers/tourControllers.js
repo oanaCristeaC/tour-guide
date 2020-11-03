@@ -49,7 +49,7 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getMothlyPlan = catchAsync(async (req, res) => {
+exports.getMonthlyPlan = catchAsync(async (req, res) => {
   const year = req.params.year * 1;
 
   const plan = await Tour.aggregate([

@@ -55,6 +55,7 @@ const createAndSendToken = (user, statusCode, res, options = {}) => {
  *
  */
 exports.signUp = catchAsync(async (req, res, next) => {
+  //TODO: Dont allow role admin and check others
   const {
     name,
     email,

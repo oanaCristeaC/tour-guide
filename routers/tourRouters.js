@@ -9,9 +9,10 @@ const {
   getTour,
   updateTour,
   deleteTour,
+
   aliasTopTours,
   tourStats,
-  getMothlyPlan,
+  getMonthlyPlan,
 } = require('./../controllers/tourControllers');
 
 /**
@@ -24,13 +25,18 @@ router.use('/:tourId/reviews', reviewRouter);
 // Extra tour with a middleware
 router.route('/top-5-cheap').get(aliasTopTours, getTours);
 router.route('/stats').get(tourStats);
-router.route('/monthly-plan/:year').get(getMothlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(protect, restrictTo('admin', 'tour-lead'), getMonthlyPlan);
 
-router.route('/').get(protect, getTours).post(createTour);
+router
+  .route('/')
+  .get(getTours)
+  .post(protect, restrictTo('admin', 'tour-lead'), createTour);
 router
   .route('/:id')
   .get(getTour)
-  .patch(updateTour)
+  .patch(protect, restrictTo('admin', 'tour-lead'), updateTour)
   .delete(protect, restrictTo('admin', 'tour-lead'), deleteTour);
 
 module.exports = router;
