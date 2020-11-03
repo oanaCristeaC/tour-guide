@@ -70,7 +70,7 @@ exports.getOne = (Model, popOption) =>
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const newDoc = await Model.create(req.body);
+    const newDoc = await Model.create(req.body); //TODO: data serialization
     res.status(201).json({
       data: {
         newDoc,
@@ -86,7 +86,7 @@ exports.getAll = (Model) =>
       .filter()
       .sort()
       .limitFields()
-      .paginate(); // Remove find()?
+      .paginate();
     const doc = await api.query;
 
     res.status(200).json({

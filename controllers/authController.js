@@ -51,23 +51,6 @@ const createAndSendToken = (user, statusCode, res, options = {}) => {
 
 /**
  *
- * @filterData returns keys with given params value
- * @param {*} data
- * @param  {...any} params
- *
- */
-
-const filterData = (data, params) => {
-  const newObject = {};
-  Object.keys(data).forEach((el) => {
-    if (params.includes(el)) newObject[el] = data[el];
-  });
-
-  return newObject;
-};
-
-/**
- *
  * @signUp
  *
  */
@@ -100,7 +83,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
  *
  */
 
-// TODO: Limit the request to 10 tries then allows tries in 1 h
+// TODO: Limit the request to 100 tries then allows tries in 1 h
 exports.signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password)
@@ -290,40 +273,4 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   await user.save();
   createAndSendToken(user, 201, res, options);
-});
-
-/**
- *
- * @updateMe updates user info except the password
- *
- */
-exports.updateMe = catchAsync(async (req, res, next) => {
-  if (req.body.password || req.body.passwordConfirm)
-    return next(
-      new AppError('To update password use update-password route.', 400)
-    );
-
-  const options = ['name', 'email'];
-  const data = filterData(req.body, options);
-  const user = await User.findByIdAndUpdate({ _id: req.user._id }, data, {
-    new: true,
-    runValidators: true,
-  });
-
-  res.status(201).json({ user });
-});
-
-/**
- *
- *  @deleteMe sets an user to inactive
- *
- */
-
-exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate({ _id: req.user._id }, { active: false });
-
-  res.status(204).json({
-    status: 'Success',
-    data: null,
-  });
 });

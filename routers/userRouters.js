@@ -4,11 +4,11 @@ const router = express.Router();
 const {
   signUp,
   signIn,
-  resetPassword,
-  forgotPassword,
   updatePassword,
-  updateMe,
-  deleteMe,
+
+  forgotPassword,
+  resetPassword,
+
   protect,
 } = require('../controllers/authController');
 
@@ -18,6 +18,9 @@ const {
   getUser,
   deleteUser,
   updateUser,
+
+  updateMe,
+  deleteMe,
 
   checkId,
 } = require('../controllers/userControllers');
