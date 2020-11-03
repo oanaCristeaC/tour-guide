@@ -43,6 +43,17 @@ exports.createUser = factory.createOne(User);
 exports.getUsers = factory.getAll(User);
 
 /**
+ * @getUserId gets the user id from the login and sets it to the params.
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+exports.getUserId = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
+/**
  *
  * @updateMe updates user info except the password
  *

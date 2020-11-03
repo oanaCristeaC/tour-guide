@@ -23,6 +23,7 @@ const {
   deleteMe,
 
   checkId,
+  getUserId,
 } = require('../controllers/userControllers');
 
 router.route('/signup').post(signUp);
@@ -31,6 +32,8 @@ router.route('/signin').post(signIn);
 router.route('/forgot-password').post(forgotPassword);
 router.route('/reset-password/:tempToken').patch(resetPassword);
 router.route('/update-password').patch(protect, updatePassword);
+
+router.route('/me').get(protect, getUserId, getUser); // first set userId in params
 router.route('/update-me').patch(protect, updateMe);
 router.route('/delete-me').delete(protect, deleteMe);
 
