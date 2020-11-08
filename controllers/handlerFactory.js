@@ -7,7 +7,6 @@ const API = require('../utils/api');
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
-    console.log('doc', req.params.id);
 
     if (!doc) {
       return next(
@@ -87,7 +86,7 @@ exports.getAll = (Model) =>
       .sort()
       .limitFields()
       .paginate();
-    const doc = await api.query;
+    const doc = await api.query; //.explain();
 
     res.status(200).json({
       status: 'Success',

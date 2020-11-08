@@ -114,6 +114,13 @@ const tourSchema = new mongoose.Schema(
 );
 
 /**
+ * Index fields to improve read data performance
+ * use explain method on the query to see totalKeysExamined
+ */
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
+/**
  *
  * Middleware which sets the slug field value to the tour name
  *
