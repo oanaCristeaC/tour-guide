@@ -13,6 +13,7 @@ const {
   aliasTopTours,
   tourStats,
   getMonthlyPlan,
+  getToursWithin,
 } = require('./../controllers/tourControllers');
 
 /**
@@ -38,5 +39,10 @@ router
   .get(getTour)
   .patch(protect, restrictTo('admin', 'tour-lead'), updateTour)
   .delete(protect, restrictTo('admin', 'tour-lead'), deleteTour);
+
+// Get tours with given distance and unit
+router
+  .route('/tours-within/:distance/centre/:latlng/unit/:unit')
+  .get(getToursWithin);
 
 module.exports = router;

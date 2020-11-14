@@ -1,6 +1,7 @@
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
+const AppError = require('../utils/appError');
 
 exports.updateTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
@@ -98,5 +99,34 @@ exports.getMonthlyPlan = catchAsync(async (req, res) => {
     data: {
       plan,
     },
+  });
+});
+
+// '/tours-within/:distance/centre/:latlng/unit/:unit'
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  if (!lat || !lng)
+    return next(
+      new AppError('Please specify lat, lng on the right format', 400)
+    );
+
+  const radius = unit === 'km' ? distance / 6378.1 : distance / 3963.2;
+
+  //https://docs.mongodb.com/manual/tutorial/calculate-distances-using-spherical-geometry-with-2d-geospatial-indexes/
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+
+  if (!tours)
+    return next(
+      new AppError('Please specify lat, lng on the right format', 400)
+    );
+
+  res.status(200).json({
+    status: 'Success',
+    results: tours.length,
+    data: tours,
   });
 });
