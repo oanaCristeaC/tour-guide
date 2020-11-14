@@ -6,7 +6,8 @@
   "scripts": {
     "serve": "nodemon server.js",
     "build": "NODE_ENV=production nodemon server.js",
-    "test": "NODE_ENV=testing nodemon server.js"
+    "test": "NODE_ENV=testing nodemon server.js",
+    "debug": "ndb node server.js"
   },
   "author": "ionela cristea",
   "license": "ISC",
