@@ -66,6 +66,9 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
   });
 };
 
+// Allow only one review for a user
+reviewSchema.index({ user: 1, tour: 1 }, { unique: true });
+
 // only after saving calculate the rating avg
 reviewSchema.post('save', function () {
   this.constructor.calcAverageRatings(this.tour); // access the model
