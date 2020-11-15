@@ -14,6 +14,7 @@ const {
   tourStats,
   getMonthlyPlan,
   getToursWithin,
+  getTourDistances,
 } = require('./../controllers/tourControllers');
 
 /**
@@ -44,5 +45,7 @@ router
 router
   .route('/tours-within/:distance/centre/:latlng/unit/:unit')
   .get(getToursWithin);
+
+router.route('/distances/:latlng/unit/:unit').get(getTourDistances);
 
 module.exports = router;

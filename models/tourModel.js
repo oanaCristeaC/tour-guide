@@ -153,10 +153,11 @@ tourSchema.post(/^find/, function (docs, next) {
  * Aggregation middleware to exclude the VIP tours from the statistics
  *
  */
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { vip: { $ne: true } } });
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { vip: { $ne: true } } });
+//   if (this.pipeline().includes(this.pipeline().find((e) => e['$geoNear']))) {} // TODO: unshift this query
+//   next();
+// });
 
 /**
  *

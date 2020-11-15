@@ -130,3 +130,32 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     data: tours,
   });
 });
+
+exports.getTourDistances = catchAsync(async (req, res, next) => {
+  //'/distances/:latlng/unit/:unit'
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  const multiplier = unit === 'mi' ? 0.000621371192 : 0.001;
+
+  if (!lat || !lng)
+    return next(
+      new AppError('Please specify lat, lng on the right format', 400)
+    );
+
+  //https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/#pipeline-geonear-key-param-example
+  const tours = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: { type: 'Point', coordinates: [lng * 1, lat * 1] }, // convert to no
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    { $project: { name: true, distance: true } },
+  ]);
+
+  res.status(200).json({
+    status: 'Success',
+    data: tours,
+  });
+});
