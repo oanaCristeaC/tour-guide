@@ -31,6 +31,12 @@ router
   .route('/monthly-plan/:year')
   .get(protect, restrictTo('admin', 'tour-lead'), getMonthlyPlan);
 
+// Get tours with given distance and unit
+router
+  .route('/tours-within/:distance/centre/:latlng/unit/:unit')
+  .get(getToursWithin);
+router.route('/distances/:latlng/unit/:unit').get(getTourDistances);
+
 router
   .route('/')
   .get(getTours)
@@ -40,12 +46,5 @@ router
   .get(getTour)
   .patch(protect, restrictTo('admin', 'tour-lead'), updateTour)
   .delete(protect, restrictTo('admin', 'tour-lead'), deleteTour);
-
-// Get tours with given distance and unit
-router
-  .route('/tours-within/:distance/centre/:latlng/unit/:unit')
-  .get(getToursWithin);
-
-router.route('/distances/:latlng/unit/:unit').get(getTourDistances);
 
 module.exports = router;

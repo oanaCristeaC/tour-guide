@@ -1,6 +1,7 @@
 // User endpoint
 const express = require('express');
 const router = express.Router();
+
 const {
   signUp,
   signIn,
@@ -26,19 +27,21 @@ const {
   getUserId,
 } = require('../controllers/userControllers');
 
-router.route('/signup').post(signUp);
-router.route('/signin').post(signIn);
+const upload = multer({ dest: 'public/omg/users' });
 
-router.route('/forgot-password').post(forgotPassword);
-router.route('/reset-password/:tempToken').patch(resetPassword);
+router.post('/signup', signUp);
+router.post('/signin', signIn);
+
+router.post('/forgot-password', forgotPassword);
+router.patch('/reset-password/:tempToken', resetPassword);
 
 // Protects all routes after this middleware
 //router.use(protect) // Not used as just in case by mistake routes get rearranged
 
-router.route('/update-password').patch(protect, updatePassword);
-router.route('/me').get(protect, getUserId, getUser); // first set userId in params
-router.route('/update-me').patch(protect, updateMe);
-router.route('/delete-me').delete(protect, deleteMe);
+router.patch('/update-password', protect, updatePassword);
+router.get('/me', protect, getUserId, getUser); // first set userId in params
+router.patch('/update-me', protect, updateMe);
+router.delete('/delete-me', protect, deleteMe);
 
 //router.use(restrictTo('admin'));
 
