@@ -5,19 +5,6 @@ const AppError = require('../utils/appError');
 const multer = require('multer');
 const sharp = require('sharp');
 
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     // null if no error
-//     cb(null, 'public/img/users');
-//   },
-//   filename: (req, file, cb) => {
-//     // file here has the same val as the req.file on the controller
-//     const fileType = file.mimetype.split('/')[1]; // TODO: accept only jpg, png or jpeg
-//     // Include the user id into the filename to make sure the filename is unique across all users
-//     cb(null, `user-${req.user._id}-${Date.now()}.${fileType}`);
-//   },
-// });
-
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
@@ -29,19 +16,19 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage, fileFilter });
 exports.uploadPhoto = upload.single('photo');
 
-exports.resizeUserPhoto = (req, res, next) => {
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
   req.file.filename = `user-${req.user._id}-${Date.now()}.jpeg`;
 
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
     .toFile(`public/img/users/${req.file.filename}`);
 
   next();
-};
+});
 
 /**
  * @checkId checks if id params set
