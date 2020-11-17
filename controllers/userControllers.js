@@ -82,9 +82,6 @@ exports.getUserId = (req, res, next) => {
  *
  */
 exports.updateMe = catchAsync(async (req, res, next) => {
-  // console.log('file', req.file);
-  // console.log('body', req.body);
-
   if (req.body.password || req.body.passwordConfirm)
     return next(
       new AppError('To update password use update-password route.', 400)
@@ -92,6 +89,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   const options = ['name', 'email'];
   const data = filterData(req.body, options);
+  if (req.file) data.photo = req.file.filename;
+
   const user = await User.findByIdAndUpdate({ _id: req.user._id }, data, {
     new: true,
     runValidators: true,
