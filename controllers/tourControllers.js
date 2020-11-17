@@ -2,10 +2,59 @@ const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 const AppError = require('../utils/appError');
+const multer = require('multer');
+const sharp = require('sharp');
+
+const storage = multer.memoryStorage();
+
+const fileFilter = (req, file, cb) => {
+  if (!file.mimetype.startsWith('image'))
+    cb(new AppError('Please use only images.', 400));
+  cb(null, true);
+};
+
+const upload = multer({ storage, fileFilter });
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  // console.log('files', req.files);
+
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  // Cover image
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpg`;
+
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // Tour images
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const image = `tour-${req.params.id}-${Date.now()}-cover${i + 1}.jpg`;
+
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${image}`);
+
+      req.body.images.push(image);
+    })
+  );
+
+  next();
+});
 
 exports.updateTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
-exports.getTour = factory.getOne(Tour, { path: 'reviews' }); // select doent work
+exports.getTour = factory.getOne(Tour, { path: 'reviews' }); // select doesn't work
 exports.createTour = factory.createOne(Tour);
 exports.getTours = factory.getAll(Tour);
 

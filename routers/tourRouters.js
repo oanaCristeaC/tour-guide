@@ -15,6 +15,9 @@ const {
   getMonthlyPlan,
   getToursWithin,
   getTourDistances,
+
+  uploadTourImages,
+  resizeTourImages,
 } = require('./../controllers/tourControllers');
 
 /**
@@ -29,7 +32,7 @@ router.route('/top-5-cheap').get(aliasTopTours, getTours);
 router.route('/stats').get(tourStats);
 router
   .route('/monthly-plan/:year')
-  .get(protect, restrictTo('admin', 'tour-lead'), getMonthlyPlan);
+  .get(protect, restrictTo('admin', 'lead-guide'), getMonthlyPlan);
 
 // Get tours with given distance and unit
 router
@@ -40,11 +43,17 @@ router.route('/distances/:latlng/unit/:unit').get(getTourDistances);
 router
   .route('/')
   .get(getTours)
-  .post(protect, restrictTo('admin', 'tour-lead'), createTour);
+  .post(protect, restrictTo('admin', 'lead-guide'), createTour);
 router
   .route('/:id')
   .get(getTour)
-  .patch(protect, restrictTo('admin', 'tour-lead'), updateTour)
-  .delete(protect, restrictTo('admin', 'tour-lead'), deleteTour);
+  .patch(
+    protect,
+    restrictTo('admin', 'lead-guide'),
+    uploadTourImages,
+    resizeTourImages,
+    updateTour
+  )
+  .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
 module.exports = router;
