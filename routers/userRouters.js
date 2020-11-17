@@ -25,9 +25,8 @@ const {
   deleteMe,
 
   getUserId,
+  uploadPhoto,
 } = require('../controllers/userControllers');
-
-const upload = multer({ dest: 'public/omg/users' });
 
 router.post('/signup', signUp);
 router.post('/signin', signIn);
@@ -40,7 +39,7 @@ router.patch('/reset-password/:tempToken', resetPassword);
 
 router.patch('/update-password', protect, updatePassword);
 router.get('/me', protect, getUserId, getUser); // first set userId in params
-router.patch('/update-me', protect, updateMe);
+router.patch('/update-me', protect, uploadPhoto, updateMe);
 router.delete('/delete-me', protect, deleteMe);
 
 //router.use(restrictTo('admin'));

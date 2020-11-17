@@ -2,6 +2,29 @@ const User = require('../models/userModel');
 const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // null if no error
+    cb(null, 'public/img/users');
+  },
+  filename: (req, file, cb) => {
+    // file here has the same val as the req.file on the controller
+    const fileType = file.mimetype.split('/')[1]; // TODO: accept only jpg, png or jpeg
+    // Include the user id into the filename to make sure the filename is unique across all users
+    cb(null, `user-${req.user._id}-${Date.now()}.${fileType}`);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (!file.mimetype.startsWith('image'))
+    cb(new AppError('Please use only images.', 400));
+  cb(null, true);
+};
+
+const upload = multer({ storage, fileFilter });
+exports.uploadPhoto = upload.single('photo');
 
 /**
  * @checkId checks if id params set
@@ -59,6 +82,9 @@ exports.getUserId = (req, res, next) => {
  *
  */
 exports.updateMe = catchAsync(async (req, res, next) => {
+  // console.log('file', req.file);
+  // console.log('body', req.body);
+
   if (req.body.password || req.body.passwordConfirm)
     return next(
       new AppError('To update password use update-password route.', 400)

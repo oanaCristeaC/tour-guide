@@ -138,6 +138,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.restrictTo = (...params) => {
   return (req, res, next) => {
     if (!params.includes(req.user.role))
+      // TODO: Handle params undefined on normal user request
       return next(
         new AppError('You are not allowed to modify this tour.', 403) // send a proper message for each request
       );
