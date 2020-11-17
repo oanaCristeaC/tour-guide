@@ -25,6 +25,7 @@ const {
   deleteMe,
 
   getUserId,
+  resizeUserPhoto,
   uploadPhoto,
 } = require('../controllers/userControllers');
 
@@ -39,7 +40,7 @@ router.patch('/reset-password/:tempToken', resetPassword);
 
 router.patch('/update-password', protect, updatePassword);
 router.get('/me', protect, getUserId, getUser); // first set userId in params
-router.patch('/update-me', protect, uploadPhoto, updateMe);
+router.patch('/update-me', protect, uploadPhoto, resizeUserPhoto, updateMe);
 router.delete('/delete-me', protect, deleteMe);
 
 //router.use(restrictTo('admin'));
