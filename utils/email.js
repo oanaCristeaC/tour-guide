@@ -51,7 +51,9 @@ module.exports = class Email {
   async sendPasswordReset() {
     await this.send({
       subject: 'Password reset',
-      message: `Your password reset token is valid for only 10 minutes.`,
+      message: `Have you forgotten your password?\n 
+			Reset your password using <a href="${this.url}">this link </a>\n
+			Please note that your password reset token is valid for only 10 minutes.`,
     });
   }
 };

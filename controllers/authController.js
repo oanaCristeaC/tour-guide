@@ -176,19 +176,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const tempToken = user.generateTempToken();
   await user.save({ validateBeforeSave: false });
 
-  const link = `${req.protocol}://${req.get(
-    'host'
-  )}/api/v1/users/reset-password/${tempToken}`;
-  const message = `Have you forgotten your password?\nUse the this link ${link} to reset it.\n
-									If you haven't request a reset of your password, ignore this message.`;
-
-  const emailOptions = {
-    subject: 'Reset password',
-    message,
-  };
-
   try {
-    //await sendEmail(emailOptions);
+    const link = `${req.protocol}://${req.get(
+      'host'
+    )}/api/v1/users/reset-password/${tempToken}`;
+    await new Email(user, link).sendPasswordReset();
     res.status(200).json({ response });
   } catch (error) {
     //this.user.passChanged = undefined; //??
