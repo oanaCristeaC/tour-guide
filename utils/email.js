@@ -10,10 +10,10 @@ module.exports = class Email {
     this.from = `Ionela Cristea <${process.env.EMAIL_FROM}>`;
   }
 
-  createTransport() {
+  getTransport() {
     if (process.env.NODE_ENV === 'production') {
       return 1; // TODO
-    } else if (process.env.NODE_ENV === 'development') {
+    } else {
       return nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
@@ -28,27 +28,30 @@ module.exports = class Email {
   async send(options) {
     const mailOptions = {
       from: this.from, //'"Fred Foo 👻" <foo@example.com>', // sender address
-      to: this.email, // list of receivers
+      to: this.to, // list of receivers
       subject: options.subject, // Subject line
-      text: options.message, // plain text body
-      //html: "<b>Hello world?</b>", // html body
+      //text: options.message, // plain text body
+      html: `<b>${options.message}</b>`, // html body
     };
 
     try {
-      await this.createTransport.sendMail(mailOptions);
+      await this.getTransport().sendMail(mailOptions);
     } catch (e) {
       console.error(e);
     }
   }
 
   async sendWelcome() {
-    await this.send('welcome', 'Welcome to the Tour-Guide Family!');
+    await this.send({
+      subject: `Welcome`,
+      message: `Welcome to the Tour-Guide Family, ${this.firstName}! <a href="${this.url}">Login here.</a>`,
+    });
   }
 
   async sendPasswordReset() {
-    await this.send(
-      'Password reset',
-      'Your password reset token is valid for only 10 minutes.'
-    );
+    await this.send({
+      subject: 'Password reset',
+      message: `Your password reset token is valid for only 10 minutes.`,
+    });
   }
 };

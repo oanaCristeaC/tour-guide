@@ -2,7 +2,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 const crypto = require('crypto');
 
 /**
@@ -72,6 +72,10 @@ exports.signUp = catchAsync(async (req, res, next) => {
     passwordConfirm,
     passChanged,
   });
+
+  const url = `${req.protocol}://${req.get('host')}/api/v1/users/me`;
+  console.log('url', url);
+  await new Email(newUser, url).sendWelcome();
 
   createAndSendToken(newUser, 201, res);
 });
@@ -184,7 +188,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   };
 
   try {
-    await sendEmail(emailOptions);
+    //await sendEmail(emailOptions);
     res.status(200).json({ response });
   } catch (error) {
     //this.user.passChanged = undefined; //??
