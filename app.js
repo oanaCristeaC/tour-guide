@@ -11,6 +11,7 @@ const hpp = require('hpp');
 const toursRouter = require('./routers/tourRouters');
 const usersRouter = require('./routers/userRouters');
 const reviewsRouter = require('./routers/reviewRouters');
+const bookingRouter = require('./routers/bookingRoute');
 
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
@@ -59,6 +60,7 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/reviews', reviewsRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 // Handle all unset routers
 app.all('*', (req, res, next) => {
