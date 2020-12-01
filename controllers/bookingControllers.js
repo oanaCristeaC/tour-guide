@@ -52,6 +52,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   });
 });
 
+// Used in view controller WIP
 exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // TEMPORARY use as not secured
   const { user, tour, price } = req.query;
