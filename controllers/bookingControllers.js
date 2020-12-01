@@ -9,8 +9,8 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     mode: 'payment',
-    success_url: `https://localhost:3000/`, //`${req.protocol}/${req.get('host')}/api/v1/`,
-    cancel_url: `https://localhost:3000/`, //`${req.protocol}/${req.get('host')}/api/v1/tours/`,
+    success_url: `https://localhost:3000/`, //`${req.protocol}/${req.get('host')}/`,
+    cancel_url: `https://localhost:3000/`, //`${req.protocol}/${req.get('host')}/tours/`,
     // https://stripe.com/docs/payments/accept-a-payment#prefilling-customer-data
     customer_email: req.user.email, // data available from protected route
     // TODO:
