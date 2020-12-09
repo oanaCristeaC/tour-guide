@@ -1,6 +1,6 @@
 ## Tour Guide API
 
-**<em>Note: This is wip<em><br>**
+**<em>Note: This is wip</em><br>**
 
 A simple API written in Node.js to be used with any front-end application.
 
