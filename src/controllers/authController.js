@@ -138,7 +138,12 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-// Allow only to admin and tour-lead
+/**
+ *
+ * @param  {...any} params
+ *
+ *  Allow only to admin and tour-lead
+ */
 exports.restrictTo = (...params) => {
   return (req, res, next) => {
     if (!params.includes(req.user.role))

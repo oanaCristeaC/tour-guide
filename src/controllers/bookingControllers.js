@@ -4,6 +4,10 @@ const catchAsync = require('../utils/catchAsync');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const factory = require('./handlerFactory');
 
+/**
+ * @getCheckoutSession for payments
+ * TODO:
+ */
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.tourId);
 
@@ -53,7 +57,11 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   });
 });
 
-// Used in view controller WIP
+/**
+ * @createBookingCheckout
+ *
+ * Used in view controller WIP
+ */
 exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // TEMPORARY use as not secured
   const { user, tour, price } = req.query;
@@ -64,8 +72,32 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   res.redirect(req.originalUrl.split('?')[0]);
 });
 
+/**
+ * @createBooking
+ *
+ */
 exports.createBooking = factory.createOne(Booking);
+
+/**
+ * @deleteBooking
+ *
+ */
 exports.deleteBooking = factory.deleteOne(Booking);
+
+/**
+ * @getBooking
+ *
+ */
 exports.getBooking = factory.getOne(Booking);
+
+/**
+ * @getBooking
+ *
+ */
 exports.getBookings = factory.getAll(Booking);
+
+/**
+ * @updateBooking
+ *
+ */
 exports.updateBooking = factory.updateOne(Booking);
