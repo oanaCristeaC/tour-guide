@@ -1,18 +1,24 @@
 const express = require('express');
 const app = express();
+const exphbs  = require('express-handlebars');
+const path = require('path');
 const AppError = require('./utils/appError');
 const errorController = require('./controllers/errorController');
+
+//Security
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+
+// Routers
 const toursRouter = require('./routers/tourRouters');
 const usersRouter = require('./routers/userRouters');
 const reviewsRouter = require('./routers/reviewRouters');
 const bookingRouter = require('./routers/bookingRoute');
-const viewsRouter = require('./routers/viewRoutes');
+const viewRouter = require('./routers/viewRoutes');
 
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
@@ -58,11 +64,24 @@ app.use((req, res, next) => {
   next();
 });
 
+
+// Template
+// TODO: double check if main needs to be removed to use stripe
+app.engine('.hbs', exphbs({
+  defaultLayout: 'main',
+  extname: '.hbs'
+}));
+
+app.set('view engine','hbs')
+app.set('views', path.join(__dirname, 'views'))
+// GLOBAL MIDDLEWARE to serving static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', viewRouter);
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/reviews', reviewsRouter);
 app.use('/api/v1/bookings', bookingRouter);
-app.use('/api/v1/views', viewsRouter);
 
 // Handle all unset routers
 app.all('*', (req, res, next) => {

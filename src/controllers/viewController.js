@@ -16,3 +16,10 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getAccount = (req, res) => {
+  res.render('auth/login', {
+    title: 'Your account'
+  })
+}
+
