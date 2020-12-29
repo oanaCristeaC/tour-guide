@@ -23,3 +23,8 @@ exports.getAccount = (req, res) => {
   })
 }
 
+exports.createAccount = (req, res) => {
+  res.render('auth/register', {
+    title: 'Create an account'
+  })
+}

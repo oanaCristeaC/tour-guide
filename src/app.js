@@ -68,14 +68,13 @@ app.use((req, res, next) => {
 // Template
 // TODO: double check if main needs to be removed to use stripe
 app.engine('.hbs', exphbs({
-  defaultLayout: 'main',
   extname: '.hbs'
 }));
 
 app.set('view engine','hbs')
 app.set('views', path.join(__dirname, 'views'))
 // GLOBAL MIDDLEWARE to serving static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/', viewRouter);
 app.use('/api/v1/tours', toursRouter);
