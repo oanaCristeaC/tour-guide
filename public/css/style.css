@@ -1,7 +1,15 @@
 * {box-sizing: border-box}
 
+body {
+  background-image: url("../img/app/background.jpg");
+  background-color: #cccccc;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: #312727;
+ }
+
 /* Full-width input fields */
-  input[type=text], input[type=password] {
+  input[type=email], input[type=password] {
   width: 100%;
   padding: 15px;
   margin: 5px 0 22px 0;
@@ -10,7 +18,7 @@
   background: #f1f1f1;
 }
 
-input[type=text]:focus, input[type=password]:focus {
+input[type=email]:focus, input[type=password]:focus {
   background-color: #ddd;
   outline: none;
 }
@@ -51,12 +59,18 @@ button:hover {
 /* Avatar image */
 img.avatar {
   width: 40%;
+  max-width: 200px;
   border-radius: 50%;
 }
 
 /* Add padding to containers */
 .container {
   padding: 16px;
+  background-color: rgb(198 202 206 / 35%);
+}
+
+h3 {
+  text-align: center;
 }
 
 /* The "Forgot password" text */
@@ -78,4 +92,14 @@ span.psw {
 
 .navbar {
   text-align: center;
+}
+
+footer {
+  font-size: .75rem;
+    line-height: 1rem;
+}
+
+form {
+  max-width: 400px;
+  margin: 0 auto;
 }
