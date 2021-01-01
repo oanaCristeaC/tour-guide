@@ -43,18 +43,18 @@ router.get('/me', protect, getUserId, getUser); // first set userId in params
 router.patch('/update-me', protect, uploadPhoto, resizeUserPhoto, updateMe);
 router.delete('/delete-me', protect, deleteMe);
 
-//router.use(restrictTo('admin'));
+//router.use(protect('admin'));
 
 // To be used by admin only
 //router.param('id', checkId);
 router
   .route('/')
-  .get(restrictTo('admin'), getUsers)
-  .post(restrictTo('admin'), createUser);
+  .get(protect, restrictTo('admin'), getUsers)
+  .post(protect, restrictTo('admin'), createUser);
 router
   .route('/:id')
-  .get(restrictTo('admin'), getUser)
-  .delete(restrictTo('admin'), deleteUser)
-  .patch(restrictTo('admin'), updateUser);
+  .get(protect, restrictTo('admin'), getUser)
+  .delete(protect, restrictTo('admin'), deleteUser)
+  .patch(protect, restrictTo('admin'), updateUser);
 
 export default router;

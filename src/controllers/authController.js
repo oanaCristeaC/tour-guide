@@ -74,7 +74,6 @@ export const signUp = catchAsync(async (req, res, next) => {
   });
 
   const url = `${req.protocol}://${req.get('host')}/api/v1/users/me`;
-  console.log('url', url);
   await new Email(newUser, url).sendWelcome();
 
   createAndSendToken(newUser, 201, res);
@@ -149,7 +148,7 @@ export const restrictTo = (...params) => {
     if (!params.includes(req.user.role))
       // TODO: Handle params undefined on normal user request
       return next(
-        new AppError('You are not allowed to modify this tour.', 403) // send a proper message for each request
+        new AppError('Not allowed.', 403) // send a proper message for each request
       );
 
     next();

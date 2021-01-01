@@ -2,8 +2,16 @@ import Booking from '../models/bookingModel.js';
 import Tour from '../models/tourModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import Stripe from 'stripe';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, null); // TODO stripe.Config
 import factory from './handlerFactory.js';
+
+// TODO
+import dotenv from 'dotenv';
+dotenv.config({
+  path: './config.env',
+});
+
+// @ts-ignore
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // TODO stripe.Config
 
 /**
  * @getCheckoutSession for payments
