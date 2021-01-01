@@ -1,24 +1,29 @@
-const express = require('express');
+import express from 'express';
 const app = express();
-const exphbs  = require('express-handlebars');
-const path = require('path');
-const AppError = require('./utils/appError');
-const errorController = require('./controllers/errorController');
+import exphbs from 'express-handlebars';
+import path from 'path';
+import AppError from './utils/appError.js';
+import { errorController } from './controllers/errorController.js';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+// @ts-ignore
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 //Security
-const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
-const hpp = require('hpp');
+import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import hpp from 'hpp';
 
 // Routers
-const toursRouter = require('./routers/tourRouters');
-const usersRouter = require('./routers/userRouters');
-const reviewsRouter = require('./routers/reviewRouters');
-const bookingRouter = require('./routers/bookingRoute');
-const viewRouter = require('./routers/viewRoutes');
+import toursRouter from './routers/tourRouters.js';
+import usersRouter from './routers/userRouters.js';
+import reviewsRouter from './routers/reviewRouters.js';
+import bookingRouter from './routers/bookingRoute.js';
+import viewRouter from './routers/viewRoutes.js';
 
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
@@ -90,4 +95,4 @@ app.all('*', (req, res, next) => {
 // Error chandelling middleware
 app.use(errorController);
 
-module.exports = app;
+export default app;

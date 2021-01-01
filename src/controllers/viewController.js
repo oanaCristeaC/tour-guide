@@ -1,9 +1,9 @@
-const catchAsync = require('../utils/catchAsync');
-const Bookings = require('../models/bookingModel');
-const Tour = require('../models/tourModel');
+import catchAsync from '../utils/catchAsync.js';
+import Bookings from '../models/bookingModel.js';
+import Tour from '../models/tourModel.js';
 
 // TODO: test this
-exports.getMyTours = catchAsync(async (req, res, next) => {
+export const getMyTours = catchAsync(async (req, res, next) => {
   const bookings = await Bookings.find({ user: req.user.id });
   const tourIds = bookings.map((el) => el.tour); // tour here is the tour id
 
@@ -17,13 +17,13 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAccount = (req, res) => {
+export const getAccount = (req, res) => {
   res.render('auth/login', {
     title: 'Your account'
   })
 }
 
-exports.createAccount = (req, res) => {
+export const createAccount = (req, res) => {
   res.render('auth/register', {
     title: 'Create an account'
   })

@@ -1,9 +1,9 @@
-const User = require('../models/userModel');
-const catchAsync = require('../utils/catchAsync');
-const jwt = require('jsonwebtoken');
-const AppError = require('../utils/appError');
-const Email = require('../utils/email');
-const crypto = require('crypto');
+import User from '../models/userModel.js';
+import catchAsync from '../utils/catchAsync.js';
+import jwt from 'jsonwebtoken';
+import AppError from '../utils/appError.js';
+import Email from '../utils/email.js';
+import crypto from 'crypto';
 
 /**
  *
@@ -54,7 +54,7 @@ const createAndSendToken = (user, statusCode, res, options = {}) => {
  * @signUp
  *
  */
-exports.signUp = catchAsync(async (req, res, next) => {
+export const signUp = catchAsync(async (req, res, next) => {
   //TODO: Dont allow role admin and check others
   const {
     name,
@@ -89,7 +89,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
  */
 
 // TODO: Limit the request to 100 tries then allows tries in 1 h
-exports.signIn = catchAsync(async (req, res, next) => {
+export const signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password)
     return next(new AppError('Please provide email and password', 400));
@@ -111,7 +111,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
  *
  */
 
-exports.protect = catchAsync(async (req, res, next) => {
+export const protect = catchAsync(async (req, res, next) => {
   let tokenHeader = req.headers.authorization;
   let token;
 
@@ -144,7 +144,7 @@ exports.protect = catchAsync(async (req, res, next) => {
  *
  *  Allow only to admin and tour-lead
  */
-exports.restrictTo = (...params) => {
+export const restrictTo = (...params) => {
   return (req, res, next) => {
     if (!params.includes(req.user.role))
       // TODO: Handle params undefined on normal user request
@@ -167,7 +167,7 @@ exports.restrictTo = (...params) => {
  *
  */
 
-exports.forgotPassword = catchAsync(async (req, res, next) => {
+export const forgotPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   const response = {
     status: 'Success',
@@ -208,7 +208,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
  *
  */
 
-exports.resetPassword = catchAsync(async (req, res, next) => {
+export const resetPassword = catchAsync(async (req, res, next) => {
   // Get the user based on encrypted token
   const tempEncrpToken = crypto
     .createHash('sha256')
@@ -250,7 +250,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
  *
  */
 
-exports.updatePassword = catchAsync(async (req, res, next) => {
+export const updatePassword = catchAsync(async (req, res, next) => {
   const user = await User.findById({ _id: req.user._id }).select('+password');
 
   if (!req.body.currentPassword)

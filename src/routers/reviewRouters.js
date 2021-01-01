@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router({ mergeParams: true });
-const { protect, restrictTo } = require('../controllers/authController');
-const {
+import { protect, restrictTo } from '../controllers/authController.js';
+import {
   getReviews,
   createReview,
   getReview,
@@ -9,7 +9,7 @@ const {
   updateReview,
 
   setTourIds,
-} = require('../controllers/reviewController');
+} from'../controllers/reviewController.js';
 
 // Routers '/' or '/:id/reviews' will be reroute to '/' due to mergeParams
 router
@@ -22,4 +22,4 @@ router
   .delete(protect, protect, restrictTo('admin', 'user'), deleteReview)
   .patch(protect, protect, restrictTo('admin', 'user'), updateReview);
 
-module.exports = router;
+export default router;

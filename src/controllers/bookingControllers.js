@@ -1,14 +1,15 @@
-const Booking = require('../models/bookingModel');
-const Tour = require('../models/tourModel');
-const catchAsync = require('../utils/catchAsync');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const factory = require('./handlerFactory');
+import Booking from '../models/bookingModel.js';
+import Tour from '../models/tourModel.js';
+import catchAsync from '../utils/catchAsync.js';
+import Stripe from 'stripe';
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, null); // TODO stripe.Config
+import factory from './handlerFactory.js';
 
 /**
  * @getCheckoutSession for payments
  * TODO:
  */
-exports.getCheckoutSession = catchAsync(async (req, res, next) => {
+export const getCheckoutSession = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.tourId);
 
   // Create a session
@@ -62,7 +63,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
  *
  * Used in view controller WIP
  */
-exports.createBookingCheckout = catchAsync(async (req, res, next) => {
+export const createBookingCheckout = catchAsync(async (req, res, next) => {
   // TEMPORARY use as not secured
   const { user, tour, price } = req.query;
 
@@ -76,28 +77,28 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
  * @createBooking
  *
  */
-exports.createBooking = factory.createOne(Booking);
+export const createBooking = factory.createOne(Booking);
 
 /**
  * @deleteBooking
  *
  */
-exports.deleteBooking = factory.deleteOne(Booking);
+export const deleteBooking = factory.deleteOne(Booking);
 
 /**
  * @getBooking
  *
  */
-exports.getBooking = factory.getOne(Booking);
+export const getBooking = factory.getOne(Booking);
 
 /**
  * @getBooking
  *
  */
-exports.getBookings = factory.getAll(Booking);
+export const getBookings = factory.getAll(Booking);
 
 /**
  * @updateBooking
  *
  */
-exports.updateBooking = factory.updateOne(Booking);
+export const updateBooking = factory.updateOne(Booking);

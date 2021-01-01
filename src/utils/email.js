@@ -1,8 +1,8 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 // new Email(user, url).sendWelcome(); // user: {email, name}, url {}
 
-module.exports = class Email {
+class Email {
   constructor(user, url) {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
@@ -64,3 +64,5 @@ module.exports = class Email {
     });
   }
 };
+
+export default Email;

@@ -1,9 +1,9 @@
-const Tour = require('../models/tourModel');
-const catchAsync = require('../utils/catchAsync');
-const factory = require('./handlerFactory');
-const AppError = require('../utils/appError');
-const multer = require('multer');
-const sharp = require('sharp');
+import Tour from '../models/tourModel.js';
+import catchAsync from '../utils/catchAsync.js';
+import factory from './handlerFactory.js';
+import AppError from '../utils/appError.js';
+import multer from 'multer';
+import sharp from 'sharp';
 
 const storage = multer.memoryStorage();
 
@@ -14,12 +14,12 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({ storage, fileFilter });
-exports.uploadTourImages = upload.fields([
+export const uploadTourImages = upload.fields([
   { name: 'imageCover', maxCount: 1 },
   { name: 'images', maxCount: 3 },
 ]);
 
-exports.resizeTourImages = catchAsync(async (req, res, next) => {
+export const resizeTourImages = catchAsync(async (req, res, next) => {
   // console.log('files', req.files);
 
   // Cover image
@@ -53,13 +53,13 @@ exports.resizeTourImages = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.updateTour = factory.updateOne(Tour);
-exports.deleteTour = factory.deleteOne(Tour);
-exports.getTour = factory.getOne(Tour, { path: 'reviews' }); // select doesn't work
-exports.createTour = factory.createOne(Tour);
-exports.getTours = factory.getAll(Tour);
+export const updateTour = factory.updateOne(Tour);
+export const deleteTour = factory.deleteOne(Tour);
+export const getTour = factory.getOne(Tour, { path: 'reviews' }); // select doesn't work
+export const createTour = factory.createOne(Tour);
+export const getTours = factory.getAll(Tour);
 
-exports.tourStats = catchAsync(async (req, res) => {
+export const tourStats = catchAsync(async (req, res) => {
   const stats = await Tour.aggregate([
     {
       $match: {
@@ -92,7 +92,7 @@ exports.tourStats = catchAsync(async (req, res) => {
 });
 
 // limit=5&sort=-ratingsAverage,price
-exports.aliasTopTours = (req, res, next) => {
+export const aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage, price';
   req.query.fields = 'name, ratingsAverage, price, summary';
@@ -100,7 +100,7 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getMonthlyPlan = catchAsync(async (req, res) => {
+export const getMonthlyPlan = catchAsync(async (req, res) => {
   const year = req.params.year * 1;
 
   const plan = await Tour.aggregate([
@@ -153,7 +153,7 @@ exports.getMonthlyPlan = catchAsync(async (req, res) => {
 });
 
 // '/tours-within/:distance/centre/:latlng/unit/:unit'
-exports.getToursWithin = catchAsync(async (req, res, next) => {
+export const getToursWithin = catchAsync(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
 
@@ -181,7 +181,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getTourDistances = catchAsync(async (req, res, next) => {
+export const getTourDistances = catchAsync(async (req, res, next) => {
   //'/distances/:latlng/unit/:unit'
   const { latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');

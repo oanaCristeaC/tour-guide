@@ -1,5 +1,5 @@
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 // process.on('uncaughtException', err => {
 //   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
@@ -18,14 +18,13 @@ mongoose
   .connect(db, {
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFindAndModify: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
   })
   .then(() => console.log('DB connection Successful'));
 
 // App running
-const app = require('./src/app');
+import app from './src/app.js';
 const port = process.env.PORT || 8000;
 
 const server = app.listen(port, () => {

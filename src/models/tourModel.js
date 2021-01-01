@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const slugify = require('slugify');
-//const User = require('./userModel');
-//const validate = require('mongoose-validator');
+import mongoose from 'mongoose';
+import slugify from 'slugify';
+//import User from './userModel');
+//import validate from 'mongoose-validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -197,4 +197,4 @@ tourSchema.virtual('reviews', {
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
-module.exports = Tour;
+export default Tour;

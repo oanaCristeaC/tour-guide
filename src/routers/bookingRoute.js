@@ -1,14 +1,14 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const {
+import {
   getCheckoutSession,
   createBooking,
   deleteBooking,
   getBooking,
   getBookings,
   updateBooking,
-} = require('../controllers/bookingControllers');
-const { protect, restrictTo } = require('../controllers/authController');
+} from '../controllers/bookingControllers.js';
+import { protect, restrictTo } from '../controllers/authController.js';
 
 router.get('/checkout-session/:tourId', protect, getCheckoutSession);
 
@@ -22,4 +22,4 @@ router
   .delete(protect, deleteBooking)
   .put(protect, updateBooking);
 
-module.exports = router;
+export default router;

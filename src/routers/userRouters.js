@@ -1,8 +1,8 @@
 // User endpoint
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-const {
+import {
   signUp,
   signIn,
   updatePassword,
@@ -12,9 +12,9 @@ const {
 
   protect,
   restrictTo,
-} = require('../controllers/authController');
+} from '../controllers/authController.js';
 
-const {
+import {
   getUsers,
   createUser,
   getUser,
@@ -27,7 +27,7 @@ const {
   getUserId,
   resizeUserPhoto,
   uploadPhoto,
-} = require('../controllers/userControllers');
+} from '../controllers/userControllers.js';
 
 router.post('/signup', signUp);
 router.post('/signin', signIn);
@@ -57,4 +57,4 @@ router
   .delete(restrictTo('admin'), deleteUser)
   .patch(restrictTo('admin'), updateUser);
 
-module.exports = router;
+export default router;

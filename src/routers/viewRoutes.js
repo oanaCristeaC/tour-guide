@@ -1,13 +1,13 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const {getAccount, createAccount} = require('../controllers/viewController')
+import {getAccount, createAccount} from '../controllers/viewController.js';
 
-const { getMyTours } = require('../controllers/viewController');
-const { protect } = require('../controllers/authController');
+import { getMyTours } from '../controllers/viewController.js';
+import { protect } from '../controllers/authController.js';
 
 
 router.get('/my-tours', protect, getMyTours);
 router.get('/login', getAccount)
 router.get('/register', createAccount)
 
-module.exports = router;
+export default router;

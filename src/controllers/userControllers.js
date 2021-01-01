@@ -1,9 +1,9 @@
-const User = require('../models/userModel');
-const factory = require('./handlerFactory');
-const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
-const multer = require('multer');
-const sharp = require('sharp');
+import User from '../models/userModel.js';
+import factory from './handlerFactory.js';
+import catchAsync from '../utils/catchAsync.js';
+import AppError from '../utils/appError.js';
+import multer from 'multer';
+import sharp from 'sharp';
 
 const storage = multer.memoryStorage();
 
@@ -14,9 +14,9 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({ storage, fileFilter });
-exports.uploadPhoto = upload.single('photo');
+export const uploadPhoto = upload.single('photo');
 
-exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+export const resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
   req.file.filename = `user-${req.user._id}-${Date.now()}.jpeg`;
@@ -38,7 +38,7 @@ exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
  * @param {*} val
  */
 
-exports.checkId = (req, res, next, val) => {
+export const checkId = (req, res, next, val) => {
   const id = req.param.id;
 
   if (!id) {
@@ -63,11 +63,11 @@ const filterData = (data, params) => {
   return newObject;
 };
 
-exports.deleteUser = factory.deleteOne(User);
-exports.updateUser = factory.updateOne(User);
-exports.getUser = factory.getOne(User);
-exports.createUser = factory.createOne(User);
-exports.getUsers = factory.getAll(User);
+export const deleteUser = factory.deleteOne(User);
+export const updateUser = factory.updateOne(User);
+export const getUser = factory.getOne(User);
+export const createUser = factory.createOne(User);
+export const getUsers = factory.getAll(User);
 
 /**
  * @getUserId gets the user id from the login and sets it to the params.
@@ -75,7 +75,7 @@ exports.getUsers = factory.getAll(User);
  * @param {*} res
  * @param {*} next
  */
-exports.getUserId = (req, res, next) => {
+export const getUserId = (req, res, next) => {
   req.params.id = req.user.id;
   next();
 };
@@ -85,7 +85,7 @@ exports.getUserId = (req, res, next) => {
  * @updateMe updates user info except the password
  *
  */
-exports.updateMe = catchAsync(async (req, res, next) => {
+export const updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm)
     return next(
       new AppError('To update password use update-password route.', 400)
@@ -109,7 +109,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
  *
  */
 
-exports.deleteMe = catchAsync(async (req, res, next) => {
+export const deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate({ _id: req.user._id }, { active: false });
 
   res.status(204).json({
